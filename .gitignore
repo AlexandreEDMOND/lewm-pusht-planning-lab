@@ -1,0 +1,5 @@
+.venv/
+.local/
+config/local.env
+__pycache__/
+*.py[cod]

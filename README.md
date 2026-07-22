@@ -77,6 +77,29 @@ flowchart LR
 
 Le checkpoint pré-entraîné sert à livrer rapidement une démonstration fiable. L'entraînement local permet ensuite de reproduire le résultat, tester SIGReg et observer les échecs de représentation. Le format de données devra être choisi selon le disque disponible : stable-worldmodel indique environ 43 Go pour HDF5 et 13 Go pour LanceDB sur son benchmark PushT.
 
+## Installation — Phase 0
+
+La configuration de référence est volontairement figée à Python 3.10 et à la version du code LeWM enregistrée comme sous-module Git. Sur le PC RTX 3090, installer d'abord le pilote NVIDIA, puis les prérequis système : `git`, `zstd`, `swig` et les outils de compilation (`build-essential` sous Ubuntu).
+
+Prévoir au moins **60 Go d'espace libre** dans `STABLEWM_HOME` : le dataset officiel PushT fait 13,1 Go compressé et est décompressé localement pour l'entraînement et l'évaluation.
+
+```bash
+git clone --recurse-submodules https://github.com/AlexandreEDMOND/lewm-pusht-planning-lab.git
+cd lewm-pusht-planning-lab
+
+cp config/local.env.example config/local.env
+# Modifier STABLEWM_HOME dans config/local.env si les données sont sur un autre disque.
+
+uv sync
+bash scripts/download_assets.sh all
+bash scripts/check_phase0.sh --require-cuda --require-assets
+bash scripts/evaluate_reference.sh 42 5
+```
+
+La dernière commande évalue cinq épisodes avec le checkpoint officiel, le seed `42`, et écrit les résultats et vidéos dans `STABLEWM_HOME/pusht/`. `scripts/check_phase0.sh` produit un rapport JSON sur Python, PyTorch/CUDA, le GPU et les assets téléchargés.
+
+> La machine de préparation actuelle est un Mac ARM sans CUDA. Le verrouillage des dépendances et les scripts sont donc prêts, mais la validation GPU de cette phase doit être effectuée sur le PC RTX 3090.
+
 ## Sources et crédits
 
 - [LeWorldModel — code officiel](https://github.com/lucas-maes/le-wm)

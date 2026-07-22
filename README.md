@@ -68,13 +68,3 @@ Le checkpoint pré-entraîné sert à livrer rapidement une démonstration fiabl
 - [Checkpoint LeWM PushT officiel](https://huggingface.co/quentinll/lewm-pusht)
 
 Le code propre à ce dépôt sera documenté avec ses versions de dépendances, seeds, configurations et résultats afin que chaque graphique et chaque vidéo soit reproductible.
-
-## Métadonnées GitHub proposées
-
-**Description**
-
-`An instrumented LeWorldModel + PushT lab for latent world-model learning, CEM planning, and MPC visualization.`
-
-**Topics**
-
-`world-model`, `model-predictive-control`, `cross-entropy-method`, `cem`, `jepa`, `representation-learning`, `reinforcement-learning`, `robotics`, `pusht`, `pytorch`, `visualization`, `latent-space`

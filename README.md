@@ -10,12 +10,14 @@ Le projet s'inspire de [LeWorldModel (LeWM)](https://github.com/lucas-maes/le-wm
 
 À partir d'une observation image `o_t`, l'encodeur produit un état latent `z_t`. Un encodeur d'action et un prédicteur apprennent la dynamique :
 
-```text
-z_t = E(o_t)
-u_t = A(a_t)
-ẑ_(t+1) = P(z_t, u_t)
-L = L_prediction + λ L_SIGReg
-```
+$$
+\begin{aligned}
+z_t &= E(o_t) && \text{encodage de l'observation} \\
+u_t &= A(a_t) && \text{encodage de l'action} \\
+\hat{z}_{t+1} &= P(z_t, u_t) && \text{prédiction du prochain état latent} \\
+\mathcal{L} &= \mathcal{L}_{\mathrm{prediction}} + \lambda\,\mathcal{L}_{\mathrm{SIGReg}} && \text{apprentissage stable sans collapse}
+\end{aligned}
+$$
 
 À l'exécution, un planificateur CEM échantillonne des séquences d'actions, les déroule dans le modèle latent et minimise leur distance au latent du but. Seule la première action est appliquée, puis le plan est recalculé à l'observation suivante (MPC en boucle fermée).
 
@@ -37,9 +39,18 @@ L'objectif pédagogique est de voir les séquences d'actions d'abord dispersées
 | Le modèle apprend-il une dynamique latente stable ? | pertes, erreur multi-step, variance des embeddings, détection du collapse |
 | CEM aide-t-il à contrôler PushT ? | taux de réussite et coût final en MPC fermé |
 | L'optimisation itérative aide-t-elle ? | CEM vs random shooting à budget de rollouts égal |
-| Les choix de planning importent-ils ? | ablations sur `N ∈ {32,64,128,256,512}` et `H ∈ {4,8,12,16}` |
+| Les choix de planning importent-ils ? | taux de réussite, coût final et temps de planning selon la population et l'horizon |
 | Le latent encode-t-il des variables physiques utiles ? | probes pour position/orientation du T, position du pousseur, distance au but et contact |
 | Le monde modèle résiste-t-il aux décalages de distribution ? | succès et erreur sous variations visuelles et physiques PushT |
+
+### Ablations de planning
+
+| Paramètre | Valeurs testées | Question isolée |
+| --- | --- | --- |
+| Population CEM `N` | 32 · 64 · 128 · 256 · 512 | Quel budget de rollouts est nécessaire ? |
+| Horizon `H` | 4 · 8 · 12 · 16 | Jusqu'où faut-il anticiper pour pousser le T ? |
+
+Pour comparer CEM et random shooting, le **nombre total de rollouts de modèle est identique**. Cela isole l'apport de la mise à jour itérative de la distribution.
 
 Les comparaisons iCEM et, si les ressources le permettent, MPPI complètent les baselines. La comparaison centrale reste **CEM contre random shooting à budget de modèles égal**.
 
@@ -47,9 +58,14 @@ Les comparaisons iCEM et, si les ressources le permettent, MPPI complètent les 
 
 La [roadmap détaillée](ROADMAP.md) définit l'ordre d'implémentation, les dépendances et les critères de validation. L'ordre est volontairement strict : rendre l'évaluation de référence reproductible avant d'entraîner ou de modifier l'architecture.
 
-```text
-Checkpoint LeWM → MPC/CEM instrumenté → visualisation → entraînement local
-        → baselines et ablations → probes latents → robustesse
+```mermaid
+flowchart LR
+    A[Checkpoint LeWM] --> B[MPC + CEM instrumenté]
+    B --> C[Visualisation des traces]
+    C --> D[Entraînement local]
+    D --> E[Baselines et ablations]
+    E --> F[Probes latents]
+    F --> G[Robustesse hors distribution]
 ```
 
 ## Environnement cible

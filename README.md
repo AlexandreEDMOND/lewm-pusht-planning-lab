@@ -100,6 +100,16 @@ La dernière commande évalue cinq épisodes avec le checkpoint officiel, le see
 
 > La machine de préparation actuelle est un Mac ARM sans CUDA. Le verrouillage des dépendances et les scripts sont donc prêts, mais la validation GPU de cette phase doit être effectuée sur le PC RTX 3090.
 
+## Référence CEM — Phase 1
+
+La référence MPC utilise le checkpoint LeWM officiel avec une configuration CEM figée : horizon `5`, population `300`, `30` itérations, `30` élites (10 %), actions de l’environnement bornées dans `[-1, 1]`, seed `42` et cinq épisodes déterministes.
+
+```bash
+bash scripts/evaluate_phase1.sh
+```
+
+Les vidéos sont écrites dans `STABLEWM_HOME/pusht/`. Le fichier `pusht_phase1_metrics.json` enregistre les épisodes sélectionnés, le taux de réussite, le coût moyen des élites à la dernière décision MPC, le temps de planning et les versions de code. Le taux de réussite et les épisodes doivent être identiques entre exécutions ; les coûts latents terminaux sont comparés à une tolérance relative de 10 %.
+
 ## Sources et crédits
 
 - [LeWorldModel — code officiel](https://github.com/lucas-maes/le-wm)

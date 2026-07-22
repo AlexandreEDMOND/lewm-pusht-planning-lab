@@ -3,5 +3,8 @@ name = "lewm-pusht-planning-lab"
 version = "0.1.0"
 requires-python = ">=3.10,<3.11"
 dependencies = [
-    "stable-worldmodel[env,train]",
+    "datasets>=2.21,<3",
+    "pyarrow<21",
+    "stable-worldmodel[env,train]==0.0.6",
+    "transformers<5",
 ]

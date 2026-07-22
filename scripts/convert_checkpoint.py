@@ -10,6 +10,11 @@ from pathlib import Path
 import torch
 
 
+def constructor_args(config: dict[str, object]) -> dict[str, object]:
+    """Remove Hydra-only keys before passing a config mapping to a constructor."""
+    return {key: value for key, value in config.items() if not key.startswith("_")}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cache-dir", type=Path, required=True)
@@ -48,8 +53,8 @@ def main() -> None:
     )
     model = JEPA(
         encoder=encoder,
-        predictor=ARPredictor(**config["predictor"]),
-        action_encoder=Embedder(**config["action_encoder"]),
+        predictor=ARPredictor(**constructor_args(config["predictor"])),
+        action_encoder=Embedder(**constructor_args(config["action_encoder"])),
         projector=mlp("projector"),
         pred_proj=mlp("pred_proj"),
     )

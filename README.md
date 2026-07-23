@@ -110,6 +110,25 @@ bash scripts/evaluate_phase1.sh
 
 Les vidéos sont écrites dans `STABLEWM_HOME/pusht/`. Le fichier `pusht_phase1_metrics.json` enregistre les épisodes sélectionnés, le taux de réussite, le coût moyen des élites à la dernière décision MPC, le temps de planning et les versions de code. Le taux de réussite et les épisodes doivent être identiques entre exécutions ; les coûts latents terminaux sont comparés à une tolérance relative de 10 %.
 
+## Traces CEM — Phase 2
+
+La phase 2 reprend **strictement** le protocole de phase 1 et enregistre une trace complète à chaque décision MPC :
+
+```bash
+bash scripts/evaluate_phase2.sh
+```
+
+Les traces sont sauvegardées dans `STABLEWM_HOME/pusht/cem_traces/`, sous la forme d’un fichier `decision_XXXX.npz` et de son métadonnée `decision_XXXX.json`. Les deux premières dimensions de chaque tableau sont toujours `(itération_CEM, environnement)`.
+
+| Tableau | Contenu |
+| --- | --- |
+| `candidates`, `costs` | Population d’actions et coût de chaque candidat |
+| `elite_indices`, `elite_costs` | Sélection des élites et leurs coûts |
+| `mean_before`, `std_before`, `mean_after`, `std_after` | Distribution CEM avant et après la mise à jour |
+| `predicted_emb`, `goal_emb` | Rollouts latents et latent objectif utilisés par le coût |
+
+Le test unitaire vérifie que l’instrumentation conserve les actions et coûts du CEM de référence pour une seed identique, et que les élites et mises à jour de distribution peuvent être reconstruites à partir de la trace.
+
 ## Sources et crédits
 
 - [LeWorldModel — code officiel](https://github.com/lucas-maes/le-wm)

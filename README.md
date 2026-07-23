@@ -129,6 +129,20 @@ Les traces sont sauvegardées dans `STABLEWM_HOME/pusht/cem_traces/`, sous la fo
 
 Le test unitaire vérifie que l’instrumentation conserve les actions et coûts du CEM de référence pour une seed identique, et que les élites et mises à jour de distribution peuvent être reconstruites à partir de la trace.
 
+## Vidéo de planning — Phase 3
+
+Le générateur de phase 3 assemble un rollout réel PushT et une décision CEM sauvegardée. Chaque image correspond à une itération CEM et montre la population, les élites, la moyenne, les coûts, la dispersion et les rollouts latents.
+
+```bash
+bash scripts/visualize_phase3.sh
+```
+
+La vidéo par défaut est écrite dans `STABLEWM_HOME/pusht/phase3_cem_decision_0000_env_0.mp4`, accompagnée d’un fichier JSON qui décrit ses sources et panneaux. Les images PushT montrent le rollout réel comme contexte visuel : elles ne sont pas synchronisées temporellement aux itérations internes de CEM. Les coordonnées d’action affichées sont les **coordonnées normalisées du modèle** conservées dans la trace ; elles ne sont pas présentées comme des actions physiques PushT. Les latents sont affichés en PCA 2D uniquement pour comparer leur évolution relative.
+
+![Aperçu de la visualisation CEM : rollout PushT, population et élites, convergence des coûts et projection PCA des rollouts latents.](docs/assets/phase3_cem_overview.png)
+
+*Aperçu à l’itération 17/30 : la population s’est concentrée, le coût des élites a chuté et la projection PCA sert uniquement à comparer les rollouts latents.*
+
 ## Sources et crédits
 
 - [LeWorldModel — code officiel](https://github.com/lucas-maes/le-wm)

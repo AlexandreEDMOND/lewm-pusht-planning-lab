@@ -4,6 +4,8 @@ version = "0.1.0"
 requires-python = ">=3.10,<3.11"
 dependencies = [
     "datasets>=2.21,<3",
+    "imageio>=2.31,<3",
+    "matplotlib>=3.8,<4",
     "pyarrow<21",
     "stable-worldmodel[env,train]==0.0.6",
     "transformers<5",

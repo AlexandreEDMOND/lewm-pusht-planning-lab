@@ -39,12 +39,20 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_trace(path: Path) -> dict[str, np.ndarray]:
+def load_trace(path: Path) -> tuple[dict[str, np.ndarray], dict]:
     with np.load(path) as archive:
         missing = REQUIRED_ARRAYS.difference(archive.files)
         if missing:
             raise ValueError(f"Trace lacks required arrays: {sorted(missing)}")
-        return {key: archive[key] for key in REQUIRED_ARRAYS}
+        trace = {key: archive[key] for key in REQUIRED_ARRAYS}
+    metadata_path = path.with_suffix(".json")
+    metadata = json.loads(metadata_path.read_text())
+    if "execution" not in metadata:
+        raise ValueError(
+            "Trace has no execution metadata. Re-run Phase 2 to link this CEM "
+            "decision to the exact PushT action and rollout frame."
+        )
+    return trace, metadata
 
 
 def pca_projection_basis(predicted_emb: np.ndarray, goal_emb: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -133,24 +141,32 @@ def add_latent_panel(
     ax.legend(loc="best", fontsize=7)
 
 
-def render(trace: dict[str, np.ndarray], frames: list[np.ndarray], environment: int, output: Path, fps: int) -> None:
+def render(trace: dict[str, np.ndarray], metadata: dict, frames: list[np.ndarray], environment: int, output: Path, fps: int) -> None:
     iterations, environments = trace["costs"].shape[:2]
     if not 0 <= environment < environments:
         raise ValueError(f"environment must be in [0, {environments - 1}]")
     if not frames:
         raise ValueError("The rollout video contains no frames.")
+    execution = metadata["execution"]
+    frame_index = int(execution["rollout_frame_index"])
+    if not 0 <= frame_index < len(frames):
+        raise ValueError(
+            f"Recorded rollout frame {frame_index} is outside the video (0..{len(frames) - 1})."
+        )
+    actions = np.asarray(execution["actions_postprocessed"], dtype=float)
+    if actions.ndim != 3 or actions.shape[1] != environments:
+        raise ValueError("Execution metadata has an invalid post-processed action shape.")
+    executed_action = actions[0, environment]
 
     centre, basis = pca_projection_basis(trace["predicted_emb"], trace["goal_emb"])
     output.parent.mkdir(parents=True, exist_ok=True)
     with imageio.get_writer(output, fps=fps, codec="libx264", quality=8, macro_block_size=2) as writer:
         for iteration in range(iterations):
             figure, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
-            frame_index = round(iteration * (len(frames) - 1) / max(iterations - 1, 1))
             axes[0, 0].imshow(frames[frame_index])
-            applied_action = trace["mean_after"][iteration, environment, 0, :2]
             axes[0, 0].set_title(
-                f"Rollout PushT réel — frame {frame_index + 1}/{len(frames)} (contexte)\n"
-                f"action moyenne normalisée : [{applied_action[0]:+.2f}, {applied_action[1]:+.2f}]"
+                f"État PushT réel au moment de la décision — frame {frame_index + 1}/{len(frames)}\n"
+                f"action PushT exécutée : [{executed_action[0]:+.2f}, {executed_action[1]:+.2f}]"
             )
             axes[0, 0].axis("off")
             add_action_panel(axes[0, 1], trace, iteration, environment)
@@ -169,9 +185,9 @@ def render(trace: dict[str, np.ndarray], frames: list[np.ndarray], environment: 
 
 def main() -> None:
     args = parse_args()
-    trace = load_trace(args.trace)
+    trace, trace_metadata = load_trace(args.trace)
     frames = read_rollout_frames(args.rollout)
-    render(trace, frames, args.environment, args.output, args.fps)
+    render(trace, trace_metadata, frames, args.environment, args.output, args.fps)
     metadata = {
         "trace": str(args.trace.resolve()),
         "rollout": str(args.rollout.resolve()),
@@ -179,7 +195,7 @@ def main() -> None:
         "environment": args.environment,
         "fps": args.fps,
         "panels": {
-            "environment": "Real PushT rollout frames sampled as context; they are not time-synchronised to CEM iterations.",
+            "environment": "Exact real PushT frame at the recorded MPC decision, with the post-processed action sent to PushT.",
             "actions": "Raw first normalized 2D action of candidates, elites and updated mean.",
             "costs": "Raw candidate and elite costs, with mean standard deviation.",
             "latents": "Qualitative PCA projection fitted to saved latent rollouts and goal.",

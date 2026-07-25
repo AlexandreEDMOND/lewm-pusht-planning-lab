@@ -1,0 +1,106 @@
+{
+  "protocol": {
+    "subset": "risk-stratified 24/128 held-out windows selected only from terminal offline latent MSE",
+    "offline_rollout": "expert action sequence from the same initial episode/start, t=0..35",
+    "control": {
+      "planner": "CEM",
+      "horizon": 5,
+      "action_block": 5,
+      "receding_horizon": 5,
+      "population": 300,
+      "iterations": 30,
+      "elites": 30,
+      "goal_offset_steps": 25,
+      "evaluation_budget": 50
+    },
+    "interpretation_limit": "CEM executes optimized actions, not the expert actions used by the offline rollout. Correlations measure shared task/model difficulty, not on-policy prediction error."
+  },
+  "analysis": {
+    "subset_size": 24,
+    "success_count": 21,
+    "failure_count": 3,
+    "success_rate": 87.5,
+    "binary_failure_prediction": {
+      "terminal_latent_mse_roc_auc": 0.5714285714285714,
+      "terminal_latent_mse_point_biserial_r": -0.027997414685814407,
+      "terminal_latent_mse_point_biserial_pvalue": 0.8966758038819724
+    },
+    "continuous_correlations": {
+      "offline_latent_vs_best_goal_error": {
+        "rho": -0.20347826086956516,
+        "pvalue": 0.3402613966398863
+      },
+      "offline_latent_vs_best_block_position": {
+        "rho": -0.24440096250730564,
+        "pvalue": 0.24974958675688969
+      },
+      "offline_latent_vs_best_block_angle": {
+        "rho": -0.02957164670906901,
+        "pvalue": 0.8908990221852948
+      },
+      "offline_block_error_vs_best_block_position": {
+        "rho": -0.07001522235529574,
+        "pvalue": 0.7451117498964992
+      },
+      "offline_angle_error_vs_best_block_angle": {
+        "rho": 0.12220048125365282,
+        "pvalue": 0.5694660707878099
+      },
+      "cem_elite_cost_vs_best_goal_error": {
+        "rho": -0.05652173913043478,
+        "pvalue": 0.7930697839291405
+      }
+    },
+    "latent_risk_quartiles": [
+      {
+        "quartile": 1,
+        "count": 6,
+        "latent_mse_min": 0.005808275192975998,
+        "latent_mse_max": 0.016667423769831657,
+        "success_rate": 100.0,
+        "median_best_normalized_goal_error": 0.5584961027413883,
+        "median_best_block_error_px": 9.557212015307815
+      },
+      {
+        "quartile": 2,
+        "count": 6,
+        "latent_mse_min": 0.017950279638171196,
+        "latent_mse_max": 0.03587203472852707,
+        "success_rate": 66.66666666666666,
+        "median_best_normalized_goal_error": 0.48566358986467895,
+        "median_best_block_error_px": 5.722714411217407
+      },
+      {
+        "quartile": 3,
+        "count": 6,
+        "latent_mse_min": 0.03976503014564514,
+        "latent_mse_max": 0.05464854836463928,
+        "success_rate": 100.0,
+        "median_best_normalized_goal_error": 0.5268005103062353,
+        "median_best_block_error_px": 3.2805756845125145
+      },
+      {
+        "quartile": 4,
+        "count": 6,
+        "latent_mse_min": 0.06003612279891968,
+        "latent_mse_max": 1.83111572265625,
+        "success_rate": 83.33333333333334,
+        "median_best_normalized_goal_error": 0.29110192391817236,
+        "median_best_block_error_px": 2.960282929435362
+      }
+    ]
+  },
+  "artifacts": {
+    "selection": "control_selection.json",
+    "joined_metrics": "control_link_metrics.csv",
+    "plot": "control_link_analysis.png",
+    "batch_metrics": [
+      "batch_00_metrics.json",
+      "batch_01_metrics.json",
+      "batch_02_metrics.json",
+      "batch_03_metrics.json",
+      "batch_04_metrics.json",
+      "batch_05_metrics.json"
+    ]
+  }
+}

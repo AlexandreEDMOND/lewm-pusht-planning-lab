@@ -1,0 +1,72 @@
+seed: 20260725
+
+# Splits are made by episode before frames are sampled. The four qualitative
+# episodes are selected only from the held-out test split.
+data:
+  train_episodes: 512
+  validation_episodes: 128
+  test_episodes: 128
+  train_frames: 10000
+  validation_frames: 2048
+  test_frames: 2048
+  qualitative_episodes: 4
+  qualitative_steps: 18
+
+rollout_evaluation:
+  context_frames: 3
+  frame_skip: 5
+  official_action_blocks: 7
+  stress_action_blocks: 18
+  generalization_window_seed_offset: 101
+  push_position_threshold_px: 2.0
+  push_angle_threshold_deg: 1.0
+
+decoder:
+  latent_dim: 192
+  base_channels: 256
+
+transformer_decoder:
+  latent_dim: 192
+  hidden_dim: 256
+  image_size: 224
+  patch_size: 16
+  depth: 4
+  heads: 8
+  mlp_ratio: 4
+  dropout: 0.1
+
+training:
+  epochs: 30
+  batch_size: 64
+  num_workers: 4
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  patience: 6
+  foreground_weight: 4.0
+  edge_weight: 0.5
+  precision: bf16
+
+transformer_training:
+  epochs: 30
+  batch_size: 64
+  num_workers: 4
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  patience: 6
+  foreground_weight: 4.0
+  edge_weight: 0.5
+  precision: bf16
+
+structured_decoder:
+  hidden_dim: 512
+  depth: 3
+
+structured_training:
+  epochs: 100
+  batch_size: 256
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 12
+
+output:
+  directory: ${STABLEWM_HOME}/pusht/visual_decoder_feasibility

@@ -4,7 +4,7 @@ Apprendre un world model visuel compact sur PushT, puis rendre le contrôle par 
 
 Le projet s'inspire de [LeWorldModel (LeWM)](https://github.com/lucas-maes/le-wm) et s'appuie sur [stable-worldmodel](https://github.com/galilai-group/stable-worldmodel). Il privilégie un modèle entraînable localement sur une RTX 3090 (24 Go) plutôt qu'un modèle fondation.
 
-> État : cadrage du projet. Voir la [roadmap](ROADMAP.md) pour les livrables et critères de réussite.
+> État : phases 0 à 3 et diagnostic des rollouts latents implémentés sur RTX 3090. Voir la [roadmap](ROADMAP.md) pour l'audit restant et les prochains jalons.
 
 ## Objectif
 
@@ -19,7 +19,7 @@ u_t &= A(a_t) && \text{encodage de l'action} \\
 \end{aligned}
 $$
 
-À l'exécution, un planificateur CEM échantillonne des séquences d'actions, les déroule dans le modèle latent et minimise leur distance au latent du but. Seule la première action est appliquée, puis le plan est recalculé à l'observation suivante (MPC en boucle fermée).
+À l'exécution, un planificateur CEM échantillonne des séquences d'actions, les déroule dans le modèle latent et minimise leur distance au latent du but. Le protocole officiel exécute les cinq blocs du plan, soit 25 actions élémentaires, avant de replanifier. Une ablation plus fermée avec `receding_horizon=1` est prévue séparément.
 
 ## Démonstration visée
 
@@ -62,10 +62,11 @@ La [roadmap détaillée](ROADMAP.md) définit l'ordre d'implémentation, les dé
 flowchart LR
     A[Checkpoint LeWM] --> B[MPC + CEM instrumenté]
     B --> C[Visualisation des traces]
-    C --> D[Entraînement local]
-    D --> E[Baselines et ablations]
-    E --> F[Probes latents]
-    F --> G[Robustesse hors distribution]
+    C --> D[Décodage et validation des rollouts]
+    D --> E[Entraînement local]
+    E --> F[Baselines et ablations]
+    F --> G[Probes latents]
+    G --> H[Robustesse hors distribution]
 ```
 
 ## Environnement cible
@@ -98,7 +99,7 @@ bash scripts/evaluate_reference.sh 42 5
 
 La dernière commande évalue cinq épisodes avec le checkpoint officiel, le seed `42`, et écrit les résultats et vidéos dans `STABLEWM_HOME/pusht/`. `scripts/check_phase0.sh` produit un rapport JSON sur Python, PyTorch/CUDA, le GPU et les assets téléchargés.
 
-> La machine de préparation actuelle est un Mac ARM sans CUDA. Le verrouillage des dépendances et les scripts sont donc prêts, mais la validation GPU de cette phase doit être effectuée sur le PC RTX 3090.
+La chaîne a été validée sur une NVIDIA RTX 3090 avec PyTorch 2.13.0, CUDA 13.0 et Python 3.10.20.
 
 ## Référence CEM — Phase 1
 
@@ -129,6 +130,8 @@ Les traces sont sauvegardées dans `STABLEWM_HOME/pusht/cem_traces/`, sous la fo
 
 Le test unitaire vérifie que l’instrumentation conserve les actions et coûts du CEM de référence pour une seed identique, et que les élites et mises à jour de distribution peuvent être reconstruites à partir de la trace.
 
+Le métadonnée de chaque décision enregistre aussi sa provenance d’exécution : épisode et step de départ, frame exacte du rollout, et toutes les actions post-traitées envoyées à PushT. Cela relie la recherche dans l’espace d’action normalisé à l’action physique effectivement appliquée.
+
 ## Vidéo de planning — Phase 3
 
 Le générateur de phase 3 assemble un rollout réel PushT et une décision CEM sauvegardée. Chaque image correspond à une itération CEM et montre la population, les élites, la moyenne, les coûts, la dispersion et les rollouts latents.
@@ -137,11 +140,50 @@ Le générateur de phase 3 assemble un rollout réel PushT et une décision CEM 
 bash scripts/visualize_phase3.sh
 ```
 
-La vidéo par défaut est écrite dans `STABLEWM_HOME/pusht/phase3_cem_decision_0000_env_0.mp4`, accompagnée d’un fichier JSON qui décrit ses sources et panneaux. Les images PushT montrent le rollout réel comme contexte visuel : elles ne sont pas synchronisées temporellement aux itérations internes de CEM. Les coordonnées d’action affichées sont les **coordonnées normalisées du modèle** conservées dans la trace ; elles ne sont pas présentées comme des actions physiques PushT. Les latents sont affichés en PCA 2D uniquement pour comparer leur évolution relative.
+La vidéo par défaut est écrite dans `STABLEWM_HOME/pusht/phase3_cem_decision_0000_env_0.mp4`, accompagnée d’un fichier JSON qui décrit ses sources et panneaux. Son panneau PushT montre la **frame exacte** du rollout au moment de la décision et l’action physique post-traitée réellement envoyée à l’environnement. Les coordonnées de population affichées restent les **coordonnées normalisées du modèle** conservées dans la trace ; elles ne sont pas confondues avec l’action physique. Les latents sont affichés en PCA 2D uniquement pour comparer leur évolution relative.
 
 ![Aperçu de la visualisation CEM : rollout PushT, population et élites, convergence des coûts et projection PCA des rollouts latents.](docs/assets/phase3_cem_overview.png)
 
-*Aperçu à l’itération 17/30 : la population s’est concentrée, le coût des élites a chuté et la projection PCA sert uniquement à comparer les rollouts latents.*
+*Aperçu à l’itération 17/30 : la population s’est concentrée, le coût des élites a chuté, la frame PushT est celle de la décision tracée et la projection PCA sert uniquement à comparer les rollouts latents.*
+
+## Décodage des rollouts — Phase 3 bis
+
+Trois décodeurs figent le diagnostic du latent sans modifier le world model ni
+le coût CEM : convolution vers RGB, Transformer à 196 requêtes vers patches RGB,
+et MLP vers l'état physique PushT. La convolution donne le rendu primaire ; le
+rendu structuré sert à mesurer précisément les erreurs de pose.
+
+```bash
+bash scripts/run_visual_decoder_feasibility.sh --rebuild-cache
+```
+
+Sur quatre épisodes de test et le protocole officiel `t=0,5,…,35`, les frames
+prédites atteignent en moyenne 27,26 dB de PSNR, 0,923 de SSIM et 0,802 d'IoU
+du premier plan. Le stress test à 90 actions reste visuellement lisible, mais
+l'erreur terminale moyenne du T atteint 13,42 px et 7,49°.
+
+![Courbes d'erreur des rollouts du protocole officiel.](docs/assets/visual_decoder_rollout_official_curves.png)
+
+Le [rapport de faisabilité complet](docs/visual_decoder_feasibility.md) contient
+la comparaison des décodeurs, les quatre GIFs, le stress test et le protocole
+de reproduction déterministe.
+
+### Généralisation et contrôle
+
+L'évaluation étendue couvre les 128 épisodes de test avec une fenêtre uniforme
+par épisode. À `t=35`, l'erreur médiane du T est de 6,74 px et 2,02°, mais le
+P95 atteint 25,35 px et 18,30°. La MSE latente est modérément corrélée à
+l'erreur physique sur la même trajectoire experte.
+
+Sur un sous-ensemble CEM stratifié de 24 cas, 21 réussissent. L'erreur offline
+ne prédit toutefois pas les trois échecs (`AUC=0,57`), car CEM choisit des
+actions différentes des actions expertes utilisées pour mesurer le rollout.
+
+![Généralisation des rollouts sur 128 épisodes.](docs/assets/rollout_generalization_horizon.png)
+
+Le [rapport de généralisation](docs/rollout_generalization.md) présente les
+quantiles, les interactions libre/contact/poussée, les cas extrêmes et le lien
+avec le contrôle.
 
 ## Sources et crédits
 

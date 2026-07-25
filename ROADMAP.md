@@ -2,18 +2,68 @@
 
 Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence que lorsque son critère de sortie est vérifié ; cela évite de confondre problème de modèle, problème de planning et problème de visualisation.
 
+## État constaté au 25 juillet 2026
+
+- Les workflows des phases 0 à 3 sont implémentés et ont produit localement le checkpoint de référence, les métriques de cinq épisodes, les traces CEM et des vidéos de planning.
+- Le test unitaire de l'instrumentation CEM passe. Les cases historiques restent décochées tant que chaque critère de sortie n'a pas fait l'objet d'un audit reproductible complet.
+- La phase 4 est préparée par une configuration et un script d'entraînement, mais aucun entraînement complet avec ses métriques de sortie n'est encore validé.
+- Les trois décodeurs (convolution, Transformer à requêtes et état physique) sont implémentés. Les rollouts officiels jusqu'à `t=35` et le stress test à `90` actions ont été évalués sur quatre épisodes de test avec GIFs, courbes et provenance complète.
+- La prochaine grande étape recommandée est l'audit reproductible des phases 0 à 3, suivi de l'évaluation de contrôle sur davantage d'épisodes. La baseline VLA reste une extension ultérieure.
+
+## Validation de généralisation — terminée
+
+Le [rapport du 25 juillet 2026](docs/rollout_generalization.md) évalue une
+fenêtre uniforme sur chacun des 128 épisodes de test, sépare mouvement libre,
+contact et poussée effective, puis rejoue CEM sur 24 cas stratifiés par risque.
+
+- [x] Évaluer les rollouts `t=35` sur les 128 épisodes de test sans sélection
+  selon les sorties du modèle.
+- [x] Rapporter médiane, P90, P95 et pires cas.
+- [x] Séparer mouvement libre, contact sans mouvement et poussée effective avec
+  la géométrie Pymunk réelle.
+- [x] Produire les courbes par horizon, la calibration latente/physique et les
+  GIFs meilleur, médian et pire.
+- [x] Rejouer le CEM officiel sur 24 épisodes couvrant tout le spectre de risque.
+- [x] Relier erreurs offline, coût CEM, réussite et meilleure proximité physique
+  au but.
+
+**Résultat :** à `t=35`, la médiane est de 6,74 px et 2,02° sur le T, mais le P95
+atteint 25,35 px et 18,30°. La MSE latente est modérément corrélée à l'erreur
+physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit pas les
+échecs CEM sous d'autres actions (`AUC=0,57`, 21 succès sur 24 cas stratifiés).
+
+## Prochain prompt recommandé — erreur on-policy de CEM
+
+1. Sauvegarder, pour chaque décision CEM, les 25 actions choisies et les latents
+   prédits correspondants.
+2. Capturer les images et états réellement obtenus après chaque bloc de cinq
+   actions.
+3. Mesurer l'écart latent et physique on-policy aux temps `5,10,…,25`.
+4. Comparer `receding_horizon=5` et `receding_horizon=1` sur les mêmes épisodes,
+   en rapportant séparément performance brute et coût de calcul.
+5. Décider à partir de ce test entre modèle temporel plus fin (`action_block=1`)
+   et amélioration du coût/solveur CEM.
+
+**Critère de sortie :** les erreurs prédit/réel le long des actions réellement
+exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
+
 ## Décisions de cadrage
 
 - **Tâche initiale** : PushT visuel et actions continues 2D, sans robot réel.
-- **Contrôle** : MPC en boucle fermée ; une action appliquée, replanification à chaque pas.
+- **Contrôle de référence** : protocole officiel LeWM avec horizon `5`, blocs de `5` actions et `receding_horizon=5` ; les `25` actions élémentaires du plan sont exécutées avant replanification.
+- **Contrôle en ablation** : mesurer séparément `receding_horizon=1`, puis éventuellement `action_block=1`, afin de quantifier le gain d'une boucle plus fermée sans confondre ce résultat avec la reproduction officielle.
 - **Coût principal** : distance entre le latent prédit à l'horizon et le latent de l'image objectif.
 - **Référence** : checkpoint LeWM officiel pour la première démo ; entraînement local après validation de la chaîne complète.
 - **Matériel cible** : une RTX 3090 de 24 Go. Les expérimentations commencent en précision mixte et avec un batch compatible avec la VRAM mesurée.
 - **Comparaison équitable** : les solveurs reçoivent le même budget total de rollouts de modèle.
+- **Décodeur visuel** : outil de diagnostic et de communication, pas composant du coût CEM tant que son utilité pour le contrôle n'est pas démontrée.
+- **Comparaison VLA** : extension expérimentale. Elle compare le contrôle obtenu à données et épisodes PushT identiques, sans prétendre isoler l'effet du préentraînement ou du langage.
 
 ## Phase 0 — Bootstrap reproductible
 
 **But :** installer et figer un environnement capable de lancer PushT et l'évaluation officielle.
+
+**État : implémenté et exécuté localement ; audit final depuis une installation propre encore à faire.**
 
 - [ ] Créer le projet Python avec `uv` et verrouiller les dépendances.
 - [ ] Installer LeWM/stable-worldmodel et documenter les versions CUDA, PyTorch et driver.
@@ -27,6 +77,8 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 
 **But :** obtenir le contrôle de référence avant toute modification du modèle ou du solveur.
 
+**État : implémenté et exécuté sur cinq épisodes ; une seconde exécution propre doit encore valider formellement la répétabilité.**
+
 - [ ] Exécuter CEM avec le coût latent et le checkpoint LeWM.
 - [ ] Fixer une première configuration : horizon, nombre d'itérations, population, fraction d'élites et bornes d'actions.
 - [ ] Évaluer sur un ensemble fixe d'épisodes/seeds.
@@ -38,6 +90,8 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 ## Phase 2 — CEM instrumenté
 
 **But :** faire du CEM un objet d'étude plutôt qu'un appel opaque au solveur existant.
+
+**État : format de trace, latents, élites et tests unitaires implémentés ; le temps individuel de chaque itération n'est pas encore enregistré.**
 
 - [ ] Définir un format de trace par décision MPC et itération CEM.
 - [ ] Enregistrer les séquences candidates, leurs coûts, indices des élites, moyenne, écart-type et temps d'itération.
@@ -51,6 +105,8 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 
 **But :** produire une visualisation claire, exportable et fidèle aux traces CEM.
 
+**État : générateur et vidéos disponibles. Le panneau réel montre la frame exacte de la décision ; l'affichage de toute la trajectoire exécutée reste à ajouter.**
+
 - [ ] Afficher l'environnement réel et la trajectoire exécutée.
 - [ ] Afficher la population d'actions et distinguer candidats, élites et moyenne.
 - [ ] Afficher les coûts et la contraction de la variance au fil des itérations.
@@ -58,6 +114,42 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 - [ ] Exporter une vidéo ou un rapport autonome à partir d'une trace sauvegardée.
 
 **Sortie vérifiable :** une vidéo montre, pour un épisode, la population initialement dispersée, la sélection des élites et la concentration de la distribution jusqu'à l'action exécutée. Les chiffres affichés correspondent aux traces brutes.
+
+## Phase 3 bis — Décodeur visuel et rollouts réel/prédit
+
+**Difficulté estimée : moyenne pour un prototype, élevée pour obtenir des images nettes et physiquement fidèles.**
+
+Le LeWM actuel utilise un unique embedding global issu du token CLS. Il ne conserve pas explicitement une grille spatiale de patches ; un petit décodeur peut donc reconstruire une image, mais la netteté et la géométrie ne sont pas garanties. Le décodeur doit d'abord être validé sur des latents d'images réelles avant d'être utilisé pour juger les rollouts autorégressifs.
+
+**Résultat du test de faisabilité : positif avec réserves.** Le [rapport du 25 juillet 2026](docs/visual_decoder_feasibility.md) mesure le décodeur pixel direct à 26,67 dB de PSNR, 0,924 de SSIM et 0,787 d'IoU du premier plan sur 2 048 images de 128 épisodes de test. Les poses sont reconnaissables mais les contours restent flous. Un décodeur structuré `latent -> état PushT -> rendu simulateur` donne des formes exactes avec une erreur moyenne de 5,98 px sur la position du T et 2,24° sur son angle.
+
+Le Transformer inspiré de l'annexe D est moins fidèle avec le même budget de 10 000 images : 22,14 dB de PSNR et 0,663 d'IoU. Sur le protocole officiel, le décodeur convolutionnel appliqué aux latents prédits atteint 27,26 dB, 0,923 de SSIM et 0,802 d'IoU en moyenne sur les frames prédites. À `t=90`, le stress test reste lisible (25,71 dB et 0,768 d'IoU), mais le diagnostic physique révèle 13,42 px d'erreur moyenne sur le T et 7,49° sur son orientation.
+
+Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**, car il montre directement ce que le world model conserve et prédit sans utiliser d'état privilégié. Le décodeur structuré est un diagnostic secondaire : il rend les erreurs de pose très lisibles, mais exploite les annotations physiques et la géométrie connue de PushT.
+
+**But :** transformer les latents en images uniquement pour observer où et quand la prédiction s'écarte du vrai rollout PushT.
+
+- [x] Figer l'encodeur et le prédicteur, puis entraîner un décodeur léger `D(z_t) -> o_t` sur les images PushT.
+- [x] Entraîner et évaluer un décodeur structuré vers la pose PushT, puis rendre cette pose avec le simulateur pour obtenir des formes nettes.
+- [x] Implémenter le décodeur Transformer de l'annexe D du papier : projection du CLS, `196` requêtes apprises, cross-attention et projection vers des patches RGB `16 × 16`.
+- [x] Comparer Transformer et convolution sur le même split, les mêmes latents et le même budget d'images avant tout changement d'échelle.
+- [x] Mesurer séparément la reconstruction de latents réels encodés, qui teste le décodeur, et la reconstruction de latents prédits, qui teste toute la chaîne.
+- [x] Rapporter perte pixel, PSNR, SSIM, IoU du premier plan et erreurs physiques sur des épisodes tenus hors entraînement, en plus d'une inspection visuelle. LPIPS est reporté car moins interprétable que les erreurs de pose sur PushT.
+- [x] Ajouter un test de faisabilité court sur la RTX 3090 avant l'entraînement complet. Arrêter ou revoir la représentation si le décodeur ne restitue pas au minimum la pose du T, la cible et le pousseur à partir d'un latent réel.
+- [x] Définir sans ambiguïté la résolution temporelle du benchmark de 18 images.
+  - Le modèle actuel utilise un horizon de `5` blocs contenant chacun `5` actions 2D, soit `25` actions élémentaires, et ne produit qu'un latent par bloc.
+  - Pour obtenir exactement une image prédite après chacune des `18` actions élémentaires, entraîner une variante `action_block=1` avec un horizon d'évaluation de `18`.
+  - Conserver en baseline moins coûteuse un rollout de `18` pas du modèle actuel, correspondant à `90` actions élémentaires, clairement étiqueté comme tel.
+- [x] Sélectionner quatre épisodes de test avec des poses initiales différentes, sans les utiliser pour choisir le décodeur ou ses hyperparamètres.
+- [x] Reproduire d'abord le protocole officiel : trois images de contexte, blocs de cinq actions, puis affichage aux temps `t ∈ {0,5,10,…,35}`.
+- [x] Pour chaque épisode, partir des mêmes observations initiales et appliquer au modèle les actions réellement exécutées dans la démonstration PushT sauvegardée.
+- [x] Produire un GIF principal avec : image réelle, reconstruction indépendante du vrai latent et décodage du latent prédit en boucle ouverte.
+- [x] Ajouter le rendu structuré et les erreurs de pose comme quatrième panneau diagnostique clairement étiqueté.
+- [x] Après la reproduction officielle, produire un stress test de `18` pas du modèle actuel, soit `90` actions élémentaires.
+- [x] Produire un panneau récapitulatif des quatre GIFs et les métriques par horizon afin de rendre visible l'accumulation d'erreur.
+- [x] Tester que la génération des GIFs est déterministe à partir d'un checkpoint, d'une seed, d'une liste d'actions et d'identifiants d'épisodes sauvegardés (checksums SHA-256 identiques sur deux exécutions CUDA).
+
+**Sortie vérifiable :** quatre GIFs reproductibles comparent réel, reconstruction indépendante et prédiction autorégressive sur des épisodes tenus à l'écart. Le rapport sépare explicitement la limite du décodeur de l'erreur du world model, puis distingue la reproduction officielle jusqu'à `t=35` du stress test de `18` blocs.
 
 ## Phase 4 — Entraînement local et stabilité de représentation
 
@@ -87,6 +179,8 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 
 **But :** vérifier quantitativement que le latent encode des variables utiles au contrôle.
 
+**État : partiellement amorcé par le décodeur structuré MLP sur le checkpoint officiel. Les probes linéaires, le contact, la distance au but et les comparaisons de checkpoints restent à faire.**
+
 - [ ] Générer ou récupérer les cibles de vérité terrain : pose du T, pose du pousseur, distance au but et contact.
 - [ ] Geler l'encodeur et séparer les données train/validation/test par épisode.
 - [ ] Entraîner des probes légers linéaires, puis documenter leur métrique appropriée (erreur de position, erreur angulaire, précision contact).
@@ -105,12 +199,49 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 
 **Sortie vérifiable :** les résultats distinguent sans ambiguïté variation visuelle et variation physique, avec configurations versionnées.
 
+## Phase 8 — Baseline Vision-Language-Action
+
+**Difficulté estimée : élevée ; ce n'est pas une comparaison « plug-and-play ».**
+
+PushT fournit une image et des actions continues 2D, mais pas les états articulaires, espaces d'actions robotiques ni annotations linguistiques attendus par les VLA courants. Un VLA préentraîné ne peut donc pas être évalué directement : il faut adapter le dataset, la tête d'action et la boucle d'inférence, puis le fine-tuner.
+
+**But :** comparer LeWM+CEM à une politique VLA fine-tunée sur PushT avec un protocole qui rend visibles les avantages, les coûts et les biais de chaque approche.
+
+- [ ] Commencer par un test de capacité mémoire et de latence sur la RTX 3090 avant toute conversion complète du dataset.
+- [ ] Utiliser en première option un VLA compact pris en charge par LeRobot, par exemple SmolVLA, plutôt qu'un modèle de plusieurs milliards de paramètres nécessitant une infrastructure distincte.
+- [ ] Figer la version du dépôt, le checkpoint amont, la licence, le nombre de paramètres et la provenance des données de préentraînement.
+- [ ] Convertir PushT vers le format LeRobot en conservant les séparations par épisode, les images, les états autorisés, les actions 2D, les timestamps et les seeds.
+- [ ] Définir une instruction constante et non ambiguë, par exemple « pousser le T dans la cible ». Documenter qu'une instruction constante ne mesure pas la généralisation linguistique du VLA.
+- [ ] Adapter et normaliser la sortie du VLA vers les actions continues 2D de PushT ; choisir une longueur de chunk compatible avec la fréquence d'action du protocole LeWM.
+- [ ] Interdire les informations privilégiées au VLA si elles ne sont pas accessibles au LeWM lors de la comparaison principale.
+- [ ] Fine-tuner avec le même ensemble d'épisodes de démonstration que celui utilisé pour le modèle local, puis sélectionner les hyperparamètres sur une validation séparée.
+- [ ] Évaluer VLA et LeWM+CEM sur les mêmes épisodes de test, poses initiales, objectifs, budget d'actions et critère de réussite.
+- [ ] Rapporter taux de réussite, coût final, latence par action, VRAM, taille du modèle, quantité de données, temps de fine-tuning et fréquence de contrôle.
+- [ ] Ajouter une baseline de politique imitation plus simple, telle qu'ACT ou Diffusion Policy via LeRobot, pour vérifier si le gain éventuel vient réellement du VLA plutôt que d'une politique directe.
+- [ ] Présenter séparément :
+  - la performance de contrôle ;
+  - le coût de calcul et de données ;
+  - la capacité du world model à simuler et planifier ;
+  - la capacité éventuelle du VLA à exploiter des instructions variées.
+- [ ] Si aucun VLA compact ne tient sur 24 Go avec une configuration utile, documenter le test négatif et reporter l'expérience sur un GPU plus grand au lieu de réduire silencieusement le protocole.
+
+**Sortie vérifiable :** un checkpoint VLA adapté à PushT et un rapport reproductible comparent au minimum LeWM+CEM, le VLA et une politique imitation simple sur les mêmes épisodes. Toute différence de préentraînement, d'observation ou de fréquence d'action est explicitement annoncée.
+
+**Références d'implémentation candidates :**
+
+- [LeRobot](https://github.com/huggingface/lerobot), pour le format de données, l'entraînement et l'évaluation unifiés.
+- [SmolVLA dans LeRobot](https://github.com/huggingface/lerobot/blob/main/docs/source/smolvla.mdx), comme premier VLA compact à tester.
+- [OpenVLA](https://github.com/openvla/openvla) et [openpi](https://github.com/Physical-Intelligence/openpi), comme variantes ultérieures seulement si l'adaptation et les ressources restent maîtrisées.
+
 ## Livrables finaux
 
 - [ ] Code d'installation et de reproduction par commandes documentées.
 - [ ] Checkpoints ou instructions de téléchargement, avec licence et provenance.
 - [ ] Interface ou générateur de vidéo de visualisation CEM.
 - [ ] Traces de planning réutilisables sans relancer l'environnement.
+- [ ] Quatre GIFs réel/prédit de 18 pas, avec protocole et métriques de reconstruction.
+- [ ] Décodeur visuel et checkpoint, clairement séparés du world model utilisé pour le planning.
+- [ ] Baseline VLA adaptée à PushT ou rapport de faisabilité négatif reproductible.
 - [ ] Rapport de résultats : référence, baselines, ablations, probes et robustesse.
 - [ ] Tableau de limites : dépendance au dataset, écart rollout latent/réalité, coût de planning et cas d'échec.
 
@@ -119,6 +250,7 @@ Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence 
 Ces éléments ne seront ajoutés qu'après les sorties précédentes :
 
 - déploiement sur un robot réel ;
-- reconstruction/décodage pixel des rollouts latents ;
-- modèles fondation ou entraînement multi-GPU ;
+- utilisation des images décodées comme coût de planning avant validation du décodeur ;
+- préentraînement d'un VLA ou d'un modèle fondation depuis zéro ;
+- entraînement multi-GPU ;
 - benchmark exhaustif de toutes les baselines du papier.

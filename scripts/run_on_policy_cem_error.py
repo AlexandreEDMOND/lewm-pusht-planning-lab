@@ -376,7 +376,7 @@ def main() -> None:
         print("No success GIF available in this run.")
     if not write_example_gif(flat_raw_paths, False, pixel_decoder, "failure", assets_dir):
         print("No failure GIF available in this run.")
-    print(json.dumps(result["aggregates"], indent=2))
+    print(json.dumps(result["planning_cost"], indent=2))
 
 
 if __name__ == "__main__":

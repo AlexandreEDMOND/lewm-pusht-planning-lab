@@ -1,14 +1,33 @@
 # Roadmap
 
-Cette roadmap découpe le projet en jalons démontrables. Une phase ne commence que lorsque son critère de sortie est vérifié ; cela évite de confondre problème de modèle, problème de planning et problème de visualisation.
+Cette roadmap sépare ce qui est **implémenté**, ce qui est **validé par un
+artefact publiable** et ce qui reste à faire. Une fonctionnalité locale n'est
+donc pas automatiquement considérée comme terminée.
 
-## État constaté au 25 juillet 2026
+Dernier audit : **30 juillet 2026**. Rapport détaillé :
+[docs/project_audit_2026-07-30.md](docs/project_audit_2026-07-30.md).
 
-- Les workflows des phases 0 à 3 sont implémentés et ont produit localement le checkpoint de référence, les métriques de cinq épisodes, les traces CEM et des vidéos de planning.
-- Le test unitaire de l'instrumentation CEM passe. Les cases historiques restent décochées tant que chaque critère de sortie n'a pas fait l'objet d'un audit reproductible complet.
-- La phase 4 est préparée par une configuration et un script d'entraînement, mais aucun entraînement complet avec ses métriques de sortie n'est encore validé.
-- Les trois décodeurs (convolution, Transformer à requêtes et état physique) sont implémentés. Les rollouts officiels jusqu'à `t=35` et le stress test à `90` actions ont été évalués sur quatre épisodes de test avec GIFs, courbes et provenance complète.
-- La prochaine grande étape recommandée est l'audit reproductible des phases 0 à 3, suivi de l'évaluation de contrôle sur davantage d'épisodes. La baseline VLA reste une extension ultérieure.
+## Tableau de bord
+
+| Jalon | État | Preuve actuelle | Prochaine sortie |
+| --- | --- | --- | --- |
+| Phase 0 — bootstrap | À auditer proprement | Contrôle complet réussi sur la machine actuelle | Installation depuis un clone neuf, hashes et manifeste d'environnement |
+| Phase 1 — référence CEM | Implémentée, préliminaire | 5/5 succès locaux sur épisodes fixes | Répétition propre et évaluation représentative |
+| Phase 2 — instrumentation | Presque complète | Traces locales et test de non-régression | Temps par itération, provenance propre et trace compacte publiée |
+| Phase 3 — visualisation | Partielle | MP4 local et aperçu PNG versionné | Trajectoire exécutée complète et animation publique |
+| Phase 3 bis — décodeurs | Validée | Rapport, figures et GIFs versionnés | Maintenir ; ne plus optimiser sans besoin de contrôle |
+| Généralisation offline | Validée | 128 épisodes, CSV/JSON et cas extrêmes versionnés | Aucun blocage pour ce sous-jalon |
+| Erreur on-policy | Non commencée | Protocole défini | Comparaison prédit/réel sous les actions CEM |
+| Phase 4 — entraînement local | Smoke test seulement | Deux batches locaux et configuration 100 époques | Run complet avec et sans SIGReg |
+| Phase 5 — baselines | Non commencée | Protocole prévu | CEM vs random shooting à budget égal |
+| Phase 6 — probes | Partielle | Décodeur d'état non linéaire | Probes linéaires et comparaison de checkpoints |
+| Phase 7 — OOD | Non commencée | Intention | Protocoles visuel et physique |
+| Phase 8 — VLA | Extension | Étude de cadrage | À isoler de la version 1 |
+
+Les cases ci-dessous signifient :
+
+- `[x]` : implémenté et vérifié par l'audit ou par un artefact versionné ;
+- `[ ]` : absent, partiel, local seulement ou encore à reproduire proprement.
 
 ## Validation de généralisation — terminée
 
@@ -32,7 +51,7 @@ atteint 25,35 px et 18,30°. La MSE latente est modérément corrélée à l'err
 physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit pas les
 échecs CEM sous d'autres actions (`AUC=0,57`, 21 succès sur 24 cas stratifiés).
 
-## Prochain prompt recommandé — erreur on-policy de CEM
+## Jalon prioritaire — erreur on-policy de CEM
 
 1. Sauvegarder, pour chaque décision CEM, les 25 actions choisies et les latents
    prédits correspondants.
@@ -46,6 +65,63 @@ physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit 
 
 **Critère de sortie :** les erreurs prédit/réel le long des actions réellement
 exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
+
+## Chemin critique recommandé
+
+L'ordre suivant permet de prendre une décision à chaque jalon et évite
+d'accumuler des expériences décoratives :
+
+1. **Fermer la reproductibilité des phases 0–3** : clone propre, seconde
+   exécution, résultats et petite trace publiés, vidéo reliée à la trajectoire.
+2. **Mesurer l'erreur on-policy** : décider entre fréquence temporelle du modèle,
+   coût latent et solveur.
+3. **Établir la référence de contrôle** : utiliser un ensemble représentatif fixé
+   avant l'exécution et publier un intervalle de confiance.
+4. **Entraîner localement** : run complet SIGReg, ablation sans SIGReg et
+   comparaison au checkpoint officiel.
+5. **Attribuer le gain au planning** : CEM contre random shooting au même budget,
+   puis seulement les balayages de population/horizon qui répondent à une
+   question.
+6. **Préparer la version 1** : artefacts, limites, licence, citation, release et
+   README final.
+
+Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
+
+## Définition de terminé
+
+### Niveau A — démonstrateur reproductible
+
+- [ ] Un clone neuf passe l'installation, le contrôle phase 0 et les 12 tests.
+- [ ] Une commande courte reproduit une évaluation CEM et son résultat structuré.
+- [ ] Une métrique de référence, une trace compacte et une animation de planning
+  sont téléchargeables avec leurs hashes.
+- [ ] L'animation relie la recherche CEM à toute la trajectoire exécutée.
+- [x] Le README explique PushT, les couleurs, les panneaux, l'état du projet et
+  ses limites avec une animation intégrée.
+- [ ] Le dépôt racine possède une licence ; code, dataset et checkpoints ont une
+  provenance explicite.
+
+### Niveau B — version 1 scientifique
+
+Le niveau B correspond à la promesse actuelle « apprendre un world model puis
+l'utiliser pour planifier ». Il exige le niveau A, plus :
+
+- [ ] Mesure de l'erreur on-policy et comparaison `receding_horizon=5` contre
+  `receding_horizon=1`.
+- [ ] Évaluation du contrôle sur le protocole représentatif préannoncé, avec
+  succès par épisode, dispersion et intervalle de confiance.
+- [ ] Entraînement local complet avec SIGReg, checkpoint et courbes.
+- [ ] Ablation sans SIGReg et diagnostic du collapse par plusieurs indicateurs.
+- [ ] Comparaison checkpoint officiel / checkpoint local sur les mêmes épisodes.
+- [ ] Comparaison CEM / random shooting à budget total de rollouts égal.
+- [ ] Balayages annoncés exécutés, ou périmètre réduit explicitement avant
+  l'analyse.
+- [ ] Release regroupant résultats bruts, configurations, hashes, figures,
+  animations et tableau des limites.
+
+Les phases 6 à 8 ne bloquent pas cette version si elles sont présentées comme
+extensions. Si elles restent dans le périmètre scientifique central, leurs
+critères de sortie redeviennent obligatoires.
 
 ## Décisions de cadrage
 
@@ -63,13 +139,16 @@ exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
 
 **But :** installer et figer un environnement capable de lancer PushT et l'évaluation officielle.
 
-**État : implémenté et exécuté localement ; audit final depuis une installation propre encore à faire.**
+**État : fonctionnel sur la machine auditée ; installation propre encore à
+valider.**
 
-- [ ] Créer le projet Python avec `uv` et verrouiller les dépendances.
-- [ ] Installer LeWM/stable-worldmodel et documenter les versions CUDA, PyTorch et driver.
-- [ ] Télécharger et valider le dataset PushT ainsi que le checkpoint officiel.
-- [ ] Ajouter une configuration locale non versionnée pour les chemins de données et de checkpoints.
-- [ ] Enregistrer une commande unique pour une évaluation déterministe (seed fixée).
+- [x] Créer le projet Python avec `uv` et verrouiller les dépendances.
+- [x] Épingler le fork LeWM par sous-module et `stable-worldmodel` dans le lock.
+- [x] Ajouter une configuration locale non versionnée pour les chemins de données et de checkpoints.
+- [x] Télécharger les assets et contrôler présence, chargement et schéma HDF5.
+- [x] Enregistrer une commande unique pour une évaluation déterministe (seed fixée).
+- [ ] Enregistrer le driver GPU et les hashes attendus du dataset/checkpoint.
+- [ ] Rejouer toute la procédure depuis un clone neuf sur une machine vide.
 
 **Sortie vérifiable :** une commande documentée charge le checkpoint, exécute au moins un épisode PushT et écrit un résultat structuré (seed, configuration, métriques et version du code).
 
@@ -77,13 +156,17 @@ exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
 
 **But :** obtenir le contrôle de référence avant toute modification du modèle ou du solveur.
 
-**État : implémenté et exécuté sur cinq épisodes ; une seconde exécution propre doit encore valider formellement la répétabilité.**
+**État : implémenté et exécuté sur cinq épisodes ; résultat fonctionnel mais
+insuffisant pour estimer la performance générale.**
 
-- [ ] Exécuter CEM avec le coût latent et le checkpoint LeWM.
-- [ ] Fixer une première configuration : horizon, nombre d'itérations, population, fraction d'élites et bornes d'actions.
-- [ ] Évaluer sur un ensemble fixe d'épisodes/seeds.
-- [ ] Produire une vidéo ou une suite d'images de quelques épisodes contrôlés.
-- [ ] Mesurer taux de réussite, coût final et temps de planning par pas.
+- [x] Exécuter CEM avec le coût latent et le checkpoint LeWM.
+- [x] Fixer une première configuration : horizon, nombre d'itérations, population, fraction d'élites et bornes d'actions.
+- [x] Évaluer sur un petit ensemble fixe d'épisodes/seeds.
+- [x] Produire localement une vidéo de chaque épisode contrôlé.
+- [x] Mesurer taux de réussite, coût final et temps de planning par pas.
+- [ ] Refaire l'exécution depuis un arbre Git propre et comparer aux tolérances annoncées.
+- [ ] Versionner ou publier les métriques et une vidéo représentative.
+- [ ] Évaluer un ensemble représentatif avec intervalle de confiance.
 
 **Sortie vérifiable :** les mêmes seeds génèrent les mêmes métriques à une tolérance numérique documentée, et les épisodes sauvegardés montrent une politique qui tente effectivement de placer le T dans la cible.
 
@@ -91,13 +174,16 @@ exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
 
 **But :** faire du CEM un objet d'étude plutôt qu'un appel opaque au solveur existant.
 
-**État : format de trace, latents, élites et tests unitaires implémentés ; le temps individuel de chaque itération n'est pas encore enregistré.**
+**État : format de trace, latents, élites et tests unitaires implémentés ; le
+temps individuel de chaque itération et un exemple publiable manquent.**
 
-- [ ] Définir un format de trace par décision MPC et itération CEM.
-- [ ] Enregistrer les séquences candidates, leurs coûts, indices des élites, moyenne, écart-type et temps d'itération.
-- [ ] Enregistrer les latents des rollouts et le latent objectif nécessaires à l'analyse.
-- [ ] Vérifier que l'instrumentation ne change pas les actions ni le résultat du CEM de référence.
-- [ ] Ajouter des tests unitaires sur la sélection des élites, la mise à jour moyenne/écart-type et le respect des bornes d'actions.
+- [x] Définir un format de trace par décision MPC et itération CEM.
+- [x] Enregistrer les séquences candidates, coûts, indices des élites, moyenne et écart-type.
+- [ ] Enregistrer le temps individuel de chaque itération.
+- [x] Enregistrer les latents des rollouts et le latent objectif nécessaires à l'analyse.
+- [x] Vérifier que l'instrumentation ne change pas les actions ni le résultat du CEM de référence.
+- [x] Tester la sélection des élites, la mise à jour moyenne/écart-type et les bornes des actions retournées.
+- [ ] Publier une trace compacte avec provenance propre, hash et description du schéma.
 
 **Sortie vérifiable :** pour une décision donnée, une trace permet de reconstruire l'évolution de `μ`, `σ`, les élites et le meilleur coût à chaque itération.
 
@@ -105,13 +191,17 @@ exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
 
 **But :** produire une visualisation claire, exportable et fidèle aux traces CEM.
 
-**État : générateur et vidéos disponibles. Le panneau réel montre la frame exacte de la décision ; l'affichage de toute la trajectoire exécutée reste à ajouter.**
+**État : générateur et vidéos disponibles localement. Le panneau réel montre la
+frame exacte de la décision ; l'affichage de toute la trajectoire exécutée et la
+publication d'une animation restent à faire.**
 
-- [ ] Afficher l'environnement réel et la trajectoire exécutée.
-- [ ] Afficher la population d'actions et distinguer candidats, élites et moyenne.
-- [ ] Afficher les coûts et la contraction de la variance au fil des itérations.
-- [ ] Afficher les rollouts latents sans prétendre qu'une projection 2D est une preuve physique.
-- [ ] Exporter une vidéo ou un rapport autonome à partir d'une trace sauvegardée.
+- [ ] Afficher l'environnement réel et toute la trajectoire exécutée.
+- [x] Afficher la frame exacte à laquelle la décision tracée est prise.
+- [x] Afficher la population d'actions et distinguer candidats, élites et moyenne.
+- [x] Afficher les coûts et la contraction de la dispersion au fil des itérations.
+- [x] Afficher les rollouts latents sans prétendre qu'une projection 2D est une preuve physique.
+- [x] Exporter une vidéo et son métadonnée JSON à partir d'une trace sauvegardée.
+- [ ] Publier une animation légère, légendée et reliée aux métriques sources.
 
 **Sortie vérifiable :** une vidéo montre, pour un épisode, la population initialement dispersée, la sélection des élites et la concentration de la distribution jusqu'à l'action exécutée. Les chiffres affichés correspondent aux traces brutes.
 
@@ -134,7 +224,7 @@ Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**,
 - [x] Implémenter le décodeur Transformer de l'annexe D du papier : projection du CLS, `196` requêtes apprises, cross-attention et projection vers des patches RGB `16 × 16`.
 - [x] Comparer Transformer et convolution sur le même split, les mêmes latents et le même budget d'images avant tout changement d'échelle.
 - [x] Mesurer séparément la reconstruction de latents réels encodés, qui teste le décodeur, et la reconstruction de latents prédits, qui teste toute la chaîne.
-- [x] Rapporter perte pixel, PSNR, SSIM, IoU du premier plan et erreurs physiques sur des épisodes tenus hors entraînement, en plus d'une inspection visuelle. LPIPS est reporté car moins interprétable que les erreurs de pose sur PushT.
+- [x] Rapporter perte pixel, PSNR, SSIM, IoU du premier plan et erreurs physiques sur des épisodes tenus hors entraînement, en plus d'une inspection visuelle. LPIPS est écarté car moins interprétable que les erreurs de pose sur PushT.
 - [x] Ajouter un test de faisabilité court sur la RTX 3090 avant l'entraînement complet. Arrêter ou revoir la représentation si le décodeur ne restitue pas au minimum la pose du T, la cible et le pousseur à partir d'un latent réel.
 - [x] Définir sans ambiguïté la résolution temporelle du benchmark de 18 images.
   - Le modèle actuel utilise un horizon de `5` blocs contenant chacun `5` actions 2D, soit `25` actions élémentaires, et ne produit qu'un latent par bloc.
@@ -155,6 +245,10 @@ Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**,
 
 **But :** reproduire un entraînement LeWM sur la RTX 3090 et mesurer les effets de SIGReg.
 
+**État : configuration et script prêts. Un smoke test de deux batches a mesuré
+environ 12,4 Gio de VRAM, mais il ne valide ni convergence, ni stabilité, ni
+contrôle.**
+
 - [ ] Lancer l'entraînement LeWM de référence avec logs de `L_prediction`, `L_SIGReg`, VRAM et débit.
 - [ ] Sauvegarder checkpoints, config complète et seed.
 - [ ] Mesurer l'erreur de prédiction sur plusieurs horizons et la distribution/variance des embeddings.
@@ -166,6 +260,9 @@ Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**,
 ## Phase 5 — Baselines et ablations de planning
 
 **But :** attribuer les gains au planning plutôt qu'au budget de calcul.
+
+**État : non commencé. La comparaison CEM/random shooting est obligatoire pour
+la version 1 ; iCEM et MPPI sont optionnels.**
 
 - [ ] Implémenter ou instrumenter random shooting avec le même coût latent et le même budget total de rollouts que CEM.
 - [ ] Évaluer iCEM avec le même protocole ; ajouter MPPI seulement si la comparaison reste lisible.
@@ -192,6 +289,8 @@ Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**,
 
 **But :** tester si contrôle et représentation résistent à des variations pertinentes.
 
+**État : extension non commencée.**
+
 - [ ] Identifier les facteurs de variation PushT disponibles dans stable-worldmodel.
 - [ ] Définir des protocoles séparés pour apparence (textures/couleurs) et dynamique.
 - [ ] Évaluer le modèle et le contrôleur sur les mêmes seeds entre conditions nominales et OOD.
@@ -201,9 +300,16 @@ Le **décodeur pixel depuis le latent CLS reste la preuve visuelle principale**,
 
 ## Phase 8 — Baseline Vision-Language-Action
 
-**Difficulté estimée : élevée ; ce n'est pas une comparaison « plug-and-play ».**
+**Statut : extension non bloquante pour la version 1. Difficulté élevée ; ce
+n'est pas une comparaison « plug-and-play ».**
 
 PushT fournit une image et des actions continues 2D, mais pas les états articulaires, espaces d'actions robotiques ni annotations linguistiques attendus par les VLA courants. Un VLA préentraîné ne peut donc pas être évalué directement : il faut adapter le dataset, la tête d'action et la boucle d'inférence, puis le fine-tuner.
+
+Cette extension doit vivre dans un environnement séparé. Le projet principal
+est figé en Python 3.10, tandis que l'extra LeRobot du
+[`stable-worldmodel` actuel](https://github.com/galilai-group/stable-worldmodel)
+annonce Python 3.12 ou plus. SmolVLA fournit par ailleurs une référence de
+fine-tuning sur A100, pas une garantie de protocole utile sur RTX 3090.
 
 **But :** comparer LeWM+CEM à une politique VLA fine-tunée sur PushT avec un protocole qui rend visibles les avantages, les coûts et les biais de chaque approche.
 
@@ -233,17 +339,26 @@ PushT fournit une image et des actions continues 2D, mais pas les états articul
 - [SmolVLA dans LeRobot](https://github.com/huggingface/lerobot/blob/main/docs/source/smolvla.mdx), comme premier VLA compact à tester.
 - [OpenVLA](https://github.com/openvla/openvla) et [openpi](https://github.com/Physical-Intelligence/openpi), comme variantes ultérieures seulement si l'adaptation et les ressources restent maîtrisées.
 
-## Livrables finaux
+## Livrables de la version 1
 
-- [ ] Code d'installation et de reproduction par commandes documentées.
-- [ ] Checkpoints ou instructions de téléchargement, avec licence et provenance.
-- [ ] Interface ou générateur de vidéo de visualisation CEM.
-- [ ] Traces de planning réutilisables sans relancer l'environnement.
-- [ ] Quatre GIFs réel/prédit de 18 pas, avec protocole et métriques de reconstruction.
-- [ ] Décodeur visuel et checkpoint, clairement séparés du world model utilisé pour le planning.
-- [ ] Baseline VLA adaptée à PushT ou rapport de faisabilité négatif reproductible.
-- [ ] Rapport de résultats : référence, baselines, ablations, probes et robustesse.
-- [ ] Tableau de limites : dépendance au dataset, écart rollout latent/réalité, coût de planning et cas d'échec.
+- [ ] Installation et reproduction validées depuis un clone propre.
+- [ ] Checkpoints ou instructions de téléchargement, avec licence, provenance et hashes.
+- [x] Générateur local de vidéo de visualisation CEM.
+- [ ] Animation CEM publiée montrant aussi la trajectoire exécutée.
+- [ ] Trace de planning compacte, documentée et réutilisable sans relancer l'environnement.
+- [x] GIFs réel/prédit, protocole de reconstruction et métriques versionnés.
+- [ ] Checkpoints des décodeurs publiés ou reconstruits par une procédure auditée.
+- [ ] Résultats représentatifs du checkpoint officiel et du checkpoint local.
+- [ ] Étude on-policy, ablation SIGReg et baseline random shooting.
+- [ ] Tableau final des limites : dépendance aux données, écart rollout/réalité, coût de planning et cas d'échec.
+- [ ] Licence racine, citation et release versionnée.
+
+## Extensions après la version 1
+
+- probes linéaires complets et analyse du latent ;
+- robustesse visuelle et physique hors distribution ;
+- iCEM et MPPI ;
+- VLA adapté à PushT ou rapport de faisabilité négatif reproductible.
 
 ## Hors périmètre initial
 

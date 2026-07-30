@@ -1,0 +1,304 @@
+{
+  "protocol": {
+    "checkpoint": "official LeWM",
+    "population": 300,
+    "iterations": 30,
+    "elites": 30,
+    "horizon_blocks": 5,
+    "action_block": 5,
+    "goal_actions": 25,
+    "budget_actions": 50,
+    "cases": [
+      {
+        "episode": 3876,
+        "start_step": 16
+      },
+      {
+        "episode": 5172,
+        "start_step": 24
+      },
+      {
+        "episode": 4981,
+        "start_step": 40
+      },
+      {
+        "episode": 2828,
+        "start_step": 43
+      },
+      {
+        "episode": 14783,
+        "start_step": 32
+      },
+      {
+        "episode": 15290,
+        "start_step": 38
+      },
+      {
+        "episode": 1625,
+        "start_step": 73
+      },
+      {
+        "episode": 11537,
+        "start_step": 66
+      },
+      {
+        "episode": 1766,
+        "start_step": 2
+      },
+      {
+        "episode": 12617,
+        "start_step": 72
+      },
+      {
+        "episode": 1251,
+        "start_step": 32
+      },
+      {
+        "episode": 2579,
+        "start_step": 28
+      },
+      {
+        "episode": 1768,
+        "start_step": 31
+      },
+      {
+        "episode": 12054,
+        "start_step": 94
+      },
+      {
+        "episode": 5689,
+        "start_step": 59
+      },
+      {
+        "episode": 13235,
+        "start_step": 68
+      },
+      {
+        "episode": 10817,
+        "start_step": 98
+      },
+      {
+        "episode": 3306,
+        "start_step": 40
+      },
+      {
+        "episode": 8913,
+        "start_step": 54
+      },
+      {
+        "episode": 17449,
+        "start_step": 30
+      },
+      {
+        "episode": 11734,
+        "start_step": 63
+      },
+      {
+        "episode": 12678,
+        "start_step": 14
+      },
+      {
+        "episode": 16653,
+        "start_step": 3
+      },
+      {
+        "episode": 2012,
+        "start_step": 11
+      }
+    ],
+    "interpretation_limit": "The 24 cases are risk-stratified and include known failures; success proportions are not population estimates."
+  },
+  "aggregates": {
+    "rh5": {
+      "5": {
+        "latent_mse": {
+          "n": 48,
+          "median": 0.008180187549442053,
+          "p90": 0.03204014711081983,
+          "p95": 0.05462135877460238,
+          "maximum": 0.3330017626285553
+        },
+        "pusher_error_px": {
+          "n": 48,
+          "median": 11.941413569773095,
+          "p90": 24.56561020702808,
+          "p95": 36.04690316808729,
+          "maximum": 440.4519205205378
+        },
+        "block_error_px": {
+          "n": 48,
+          "median": 6.006114742973883,
+          "p90": 12.736787769235402,
+          "p95": 14.279189402902857,
+          "maximum": 27.53926849177439
+        },
+        "block_angle_error_deg": {
+          "n": 48,
+          "median": 1.6148598300210733,
+          "p90": 6.324451619469993,
+          "p95": 7.875942338432547,
+          "maximum": 8.733583222029191
+        }
+      },
+      "10": {
+        "latent_mse": {
+          "n": 48,
+          "median": 0.01589956833049655,
+          "p90": 0.0462884053587914,
+          "p95": 0.07904172781854862,
+          "maximum": 0.34339919686317444
+        },
+        "pusher_error_px": {
+          "n": 48,
+          "median": 15.235395592263679,
+          "p90": 29.895816952420496,
+          "p95": 68.23432439526029,
+          "maximum": 452.0078758993987
+        },
+        "block_error_px": {
+          "n": 48,
+          "median": 6.8623007362909085,
+          "p90": 13.024031103464576,
+          "p95": 15.68840808050222,
+          "maximum": 22.462980075357454
+        },
+        "block_angle_error_deg": {
+          "n": 48,
+          "median": 2.0024590049533,
+          "p90": 8.310001200656044,
+          "p95": 9.017102476300108,
+          "maximum": 21.413339727285315
+        }
+      },
+      "15": {
+        "latent_mse": {
+          "n": 48,
+          "median": 0.023827501572668552,
+          "p90": 0.09046787247061733,
+          "p95": 0.3329225480556487,
+          "maximum": 0.45021748542785645
+        },
+        "pusher_error_px": {
+          "n": 48,
+          "median": 15.989360163761695,
+          "p90": 51.521457441161935,
+          "p95": 126.10495932434537,
+          "maximum": 461.40642853470956
+        },
+        "block_error_px": {
+          "n": 48,
+          "median": 7.553454395669162,
+          "p90": 14.620901026841635,
+          "p95": 16.708990287669575,
+          "maximum": 26.32138654550924
+        },
+        "block_angle_error_deg": {
+          "n": 48,
+          "median": 2.345897640203802,
+          "p90": 8.359713979834071,
+          "p95": 9.667139775837224,
+          "maximum": 15.610588593360903
+        }
+      },
+      "20": {
+        "latent_mse": {
+          "n": 48,
+          "median": 0.044557156041264534,
+          "p90": 0.1611678749322894,
+          "p95": 0.3936321705579757,
+          "maximum": 0.4531324803829193
+        },
+        "pusher_error_px": {
+          "n": 48,
+          "median": 15.759552297231242,
+          "p90": 40.62347005689628,
+          "p95": 107.5465985461938,
+          "maximum": 507.61301993781285
+        },
+        "block_error_px": {
+          "n": 48,
+          "median": 8.760708279703545,
+          "p90": 15.27976098611882,
+          "p95": 20.3578513887171,
+          "maximum": 24.79392678486023
+        },
+        "block_angle_error_deg": {
+          "n": 48,
+          "median": 2.182447934954545,
+          "p90": 7.479791940350249,
+          "p95": 8.67618467199378,
+          "maximum": 11.305738925555307
+        }
+      },
+      "25": {
+        "latent_mse": {
+          "n": 48,
+          "median": 0.06444291025400162,
+          "p90": 0.40093062222003945,
+          "p95": 0.5399639427661895,
+          "maximum": 0.9680564999580383
+        },
+        "pusher_error_px": {
+          "n": 48,
+          "median": 14.596005170951736,
+          "p90": 40.89153629948556,
+          "p95": 96.1777726362926,
+          "maximum": 526.4288925469981
+        },
+        "block_error_px": {
+          "n": 48,
+          "median": 9.726819235724186,
+          "p90": 22.20907627061363,
+          "p95": 24.034392740651683,
+          "maximum": 35.799105559289444
+        },
+        "block_angle_error_deg": {
+          "n": 48,
+          "median": 2.8484750033861026,
+          "p90": 11.492937372554229,
+          "p95": 15.1534382491306,
+          "maximum": 32.71698825184472
+        }
+      }
+    },
+    "rh1": {
+      "5": {
+        "latent_mse": {
+          "n": 240,
+          "median": 0.01045526610687375,
+          "p90": 0.1287050127983093,
+          "p95": 0.19033138155937174,
+          "maximum": 0.6350071430206299
+        },
+        "pusher_error_px": {
+          "n": 240,
+          "median": 15.311511219103949,
+          "p90": 311.458183843245,
+          "p95": 566.4707097250409,
+          "maximum": 995.3984380945436
+        },
+        "block_error_px": {
+          "n": 240,
+          "median": 6.383449687188989,
+          "p90": 16.65121605108487,
+          "p95": 20.886880881758376,
+          "maximum": 41.66804612397926
+        },
+        "block_angle_error_deg": {
+          "n": 240,
+          "median": 1.8603865157358612,
+          "p90": 7.380030326501449,
+          "p95": 8.629043114359586,
+          "maximum": 20.770933115088937
+        }
+      }
+    }
+  },
+  "artifacts": {
+    "frame_metrics": "on_policy_cem_frame_metrics.csv",
+    "episode_metrics": "on_policy_cem_episode_metrics.csv",
+    "errors_by_horizon": "docs/assets/on_policy_cem_errors_by_horizon.png",
+    "control_link": "docs/assets/on_policy_cem_control_link.png",
+    "raw_root": "/home/alexandre/CodePuant/lewm-pusht-planning-lab/.local/stablewm/pusht/on_policy_cem"
+  }
+}

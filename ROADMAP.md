@@ -17,7 +17,7 @@ Dernier audit : **30 juillet 2026**. Rapport détaillé :
 | Phase 3 — visualisation | Partielle | MP4 local et aperçu PNG versionné | Trajectoire exécutée complète et animation publique |
 | Phase 3 bis — décodeurs | Validée | Rapport, figures et GIFs versionnés | Maintenir ; ne plus optimiser sans besoin de contrôle |
 | Généralisation offline | Validée | 128 épisodes, CSV/JSON et cas extrêmes versionnés | Aucun blocage pour ce sous-jalon |
-| Erreur on-policy | Non commencée | Protocole défini | Comparaison prédit/réel sous les actions CEM |
+| Erreur on-policy | Validée, stratifiée | RH=5/RH=1, artefacts et GIFs | Examiner coût latent/solveur |
 | Phase 4 — entraînement local | Smoke test seulement | Deux batches locaux et configuration 100 époques | Run complet avec et sans SIGReg |
 | Phase 5 — baselines | Non commencée | Protocole prévu | CEM vs random shooting à budget égal |
 | Phase 6 — probes | Partielle | Décodeur d'état non linéaire | Probes linéaires et comparaison de checkpoints |
@@ -63,8 +63,10 @@ physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit 
 5. Décider à partir de ce test entre modèle temporel plus fin (`action_block=1`)
    et amélioration du coût/solveur CEM.
 
-**Critère de sortie :** les erreurs prédit/réel le long des actions réellement
-exécutées expliquent — ou réfutent clairement — les échecs de contrôle.
+**Résultat :** [l'étude on-policy](docs/on_policy_cem_error.md) observe une
+dérive à 25 actions; RH=1 ne réduit pas l'erreur à cinq actions et obtient
+7/24 contre 21/24 pour RH=5 sur les mêmes cas stratifiés. Ces proportions ne
+sont pas des taux de réussite populationnels.
 
 ## Chemin critique recommandé
 

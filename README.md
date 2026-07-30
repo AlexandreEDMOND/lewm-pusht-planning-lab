@@ -42,7 +42,7 @@ Le dépôt cherche à répondre à trois questions simples :
 | Contrôle CEM officiel | Préliminaire | 5 succès sur 5 épisodes fixes ; échantillon trop petit pour estimer le taux général |
 | Traces et visualisation CEM | Presque complet | Actions, coûts, élites, distributions et latents sont enregistrés ; la trajectoire exécutée complète manque dans l'animation |
 | Décodeurs et rollouts | Validé dans le protocole annoncé | Trois décodeurs, 2 048 images de test et une étude sur 128 épisodes |
-| Lien erreur offline / contrôle | Exploratoire | 21 succès sur 24 cas stratifiés ; ce ratio n'est pas un taux de réussite populationnel |
+| Erreur on-policy CEM | Validée sur cas stratifiés | RH=5 : 21/24, RH=1 : 7/24 ; ce n'est pas un taux de réussite populationnel |
 | Entraînement LeWM local | Non validé | Configuration et smoke test disponibles, mais aucun run complet publié |
 | CEM vs random shooting | Non commencé | Comparaison indispensable pour attribuer un gain à l'optimisation CEM |
 
@@ -256,6 +256,8 @@ L'erreur offline ne prédit toutefois pas les trois échecs (`AUC=0,57`), car CE
 actions différentes des actions expertes utilisées pour mesurer le rollout.
 
 ![Généralisation des rollouts sur 128 épisodes.](docs/assets/rollout_generalization_horizon.png)
+
+L'[étude on-policy CEM](docs/on_policy_cem_error.md) montre que RH=1 dégrade le contrôle sur ces 24 cas et coûte cinq fois plus de rollouts.
 
 Le [rapport de généralisation](docs/rollout_generalization.md) présente les
 quantiles, les interactions libre/contact/poussée, les cas extrêmes et le lien

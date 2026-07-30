@@ -17,6 +17,11 @@ populationnelle.
 La replanification à chaque bloc n'améliore donc pas ce contrôle : elle coûte
 cinq fois plus de rollouts et dégrade fortement ce diagnostic apparié.
 
+Le tableau apparié est 7 succès communs, 14 RH=5 seulement, 0 RH=1 seulement
+et 3 échecs communs. RH=5 totalise 191,26 s sur 12 appels MPC batch (7,97 s par
+épisode); RH=1, 857,90 s sur 60 appels (35,75 s par épisode). RH=1 utilise
+exactement 5× plus de rollouts et 4,49× plus de temps mur observé.
+
 ## Erreur à la décision
 
 Les branches sont comparées seulement lorsqu'elles sont exécutées : cinq blocs
@@ -40,6 +45,22 @@ elle seule la chute de RH=1, dont la première erreur médiane reste comparable
 cinq pas améliore forcément le succès ». Le prochain investissement doit
 prioritairement examiner le coût latent et/ou le solveur CEM; `action_block=1`
 reste une hypothèse à tester séparément, pas une conséquence établie ici.
+
+## Association descriptive erreur → résultat et limite Gymnasium
+
+Les AUC sont calculées après médiane par épisode, donc RH=1 ne pèse pas cinq
+fois plus. À RH=5, l'erreur T factuelle à 25 actions est 9,23 px chez les
+succès contre 23,26 px chez les trois échecs (AUC=1,00); la MSE a AUC=0,83. À
+RH=1, l'erreur T à cinq actions a AUC=0,55 et le flux exécuté à 25 actions
+AUC=0,45. Ce signal RH=5 dépasse l'AUC offline 0,571, mais reste descriptif.
+
+![Erreur et résultat par épisode](assets/on_policy_cem_error_outcome.png)
+
+L'avertissement Gymnasium est réel : `PushT._get_obs()` renvoie des positions
+XY du pousseur hors `[0,512]` (environ -800 à 901) et des vitesses négatives,
+alors que l'espace déclaré les borne. RH=5 sort dans 6/24 épisodes (2 échecs),
+RH=1 dans 9/24 (8 échecs). Les observations brutes sont conservées et cet effet
+peut contribuer à certains échecs RH=1, sans les expliquer tous.
 
 ## Reproduction et artefacts
 

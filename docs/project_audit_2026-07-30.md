@@ -1,5 +1,10 @@
 # Audit du projet — 30 juillet 2026
 
+> **Archive historique.** Cet audit décrit le dépôt aux commits `3021360` /
+> `6bb960f`, avant l'instrumentation et l'étude on-policy. Pour l'état vérifié
+> actuel, consulter le [rapport de validation](validation_report.md) et la
+> [roadmap](../ROADMAP.md).
+
 ## Verdict exécutif
 
 Le dépôt est un **prototype de recherche avancé et cohérent**, mais il n'est pas

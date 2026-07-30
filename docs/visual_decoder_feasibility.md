@@ -139,7 +139,7 @@ secondaire, car il rend les erreurs physiques nettes mais connaît la géométri
 PushT. Le Transformer est conservé comme comparaison fidèle à l'idée du papier,
 mais il ne doit pas remplacer la convolution avec ce budget d'entraînement.
 
-## Limites et prochaine validation
+## Limites et validation associée
 
 - Le rendu structuré est spécifique à PushT et utilise la connaissance de la géométrie du simulateur.
 - La moyenne masque quelques cas difficiles : sur l'épisode 8904, l'erreur moyenne de position du T atteint 17,46 px.
@@ -149,8 +149,10 @@ mais il ne doit pas remplacer la convolution avec ce budget d'entraînement.
   chacune de 18 actions élémentaires nécessitera une variante entraînée avec
   `action_block=1`; le stress test actuel contient 18 transitions latentes,
   donc 90 actions et 19 images avec l'image initiale.
-- La prochaine validation doit relier ces erreurs de prédiction au taux de
-  réussite du contrôle sur un lot d'épisodes plus grand.
+- Le lien avec le contrôle a été étudié sur 128 rollouts offline puis sur 24 cas
+  CEM stratifiés. Les résultats sont détaillés dans le rapport de
+  [généralisation](rollout_generalization.md) et dans celui consacré à
+  l'[erreur on-policy](on_policy_cem_error.md).
 
 ## Reproduction
 

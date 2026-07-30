@@ -4,8 +4,10 @@ Cette roadmap sépare ce qui est **implémenté**, ce qui est **validé par un
 artefact publiable** et ce qui reste à faire. Une fonctionnalité locale n'est
 donc pas automatiquement considérée comme terminée.
 
-Dernier audit : **30 juillet 2026**. Rapport détaillé :
-[docs/project_audit_2026-07-30.md](docs/project_audit_2026-07-30.md).
+Dernière validation : **30 juillet 2026**. Résultats et vérifications :
+[docs/validation_report.md](docs/validation_report.md).
+L'[audit initial](docs/project_audit_2026-07-30.md) reste disponible comme
+photographie historique du dépôt avant l'étude on-policy.
 
 ## Tableau de bord
 
@@ -26,7 +28,7 @@ Dernier audit : **30 juillet 2026**. Rapport détaillé :
 
 Les cases ci-dessous signifient :
 
-- `[x]` : implémenté et vérifié par l'audit ou par un artefact versionné ;
+- `[x]` : implémenté et vérifié par une validation ou un artefact versionné ;
 - `[ ]` : absent, partiel, local seulement ou encore à reproduire proprement.
 
 ## Validation de généralisation — terminée
@@ -51,7 +53,7 @@ atteint 25,35 px et 18,30°. La MSE latente est modérément corrélée à l'err
 physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit pas les
 échecs CEM sous d'autres actions (`AUC=0,57`, 21 succès sur 24 cas stratifiés).
 
-## Jalon prioritaire — erreur on-policy de CEM
+## Validation terminée — erreur on-policy de CEM
 
 1. Sauvegarder, pour chaque décision CEM, les 25 actions choisies et les latents
    prédits correspondants.
@@ -75,15 +77,15 @@ d'accumuler des expériences décoratives :
 
 1. **Fermer la reproductibilité des phases 0–3** : clone propre, seconde
    exécution, résultats et petite trace publiés, vidéo reliée à la trajectoire.
-2. **Mesurer l'erreur on-policy** : décider entre fréquence temporelle du modèle,
-   coût latent et solveur.
-3. **Établir la référence de contrôle** : utiliser un ensemble représentatif fixé
+2. **Établir la référence de contrôle** : utiliser un ensemble représentatif fixé
    avant l'exécution et publier un intervalle de confiance.
-4. **Entraîner localement** : run complet SIGReg, ablation sans SIGReg et
+3. **Entraîner localement** : run complet SIGReg, ablation sans SIGReg et
    comparaison au checkpoint officiel.
-5. **Attribuer le gain au planning** : CEM contre random shooting au même budget,
+4. **Attribuer le gain au planning** : CEM contre random shooting au même budget,
    puis seulement les balayages de population/horizon qui répondent à une
    question.
+5. **Examiner le coût et le solveur** : exploiter le diagnostic on-policy avant
+   de tester une nouvelle fréquence temporelle ou `action_block=1`.
 6. **Préparer la version 1** : artefacts, limites, licence, citation, release et
    README final.
 
@@ -93,13 +95,13 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 
 ### Niveau A — démonstrateur reproductible
 
-- [ ] Un clone neuf passe l'installation, le contrôle phase 0 et les 12 tests.
+- [ ] Un clone neuf passe l'installation, le contrôle phase 0 et les 19 tests.
 - [ ] Une commande courte reproduit une évaluation CEM et son résultat structuré.
 - [ ] Une métrique de référence, une trace compacte et une animation de planning
   sont téléchargeables avec leurs hashes.
 - [ ] L'animation relie la recherche CEM à toute la trajectoire exécutée.
-- [x] Le README explique PushT, les couleurs, les panneaux, l'état du projet et
-  ses limites avec une animation intégrée.
+- [x] Le README présente PushT, LeWM, CEM et les visualisations avec une
+  animation intégrée.
 - [ ] Le dépôt racine possède une licence ; code, dataset et checkpoints ont une
   provenance explicite.
 
@@ -108,7 +110,7 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 Le niveau B correspond à la promesse actuelle « apprendre un world model puis
 l'utiliser pour planifier ». Il exige le niveau A, plus :
 
-- [ ] Mesure de l'erreur on-policy et comparaison `receding_horizon=5` contre
+- [x] Mesure de l'erreur on-policy et comparaison `receding_horizon=5` contre
   `receding_horizon=1`.
 - [ ] Évaluation du contrôle sur le protocole représentatif préannoncé, avec
   succès par épisode, dispersion et intervalle de confiance.
@@ -351,7 +353,8 @@ fine-tuning sur A100, pas une garantie de protocole utile sur RTX 3090.
 - [x] GIFs réel/prédit, protocole de reconstruction et métriques versionnés.
 - [ ] Checkpoints des décodeurs publiés ou reconstruits par une procédure auditée.
 - [ ] Résultats représentatifs du checkpoint officiel et du checkpoint local.
-- [ ] Étude on-policy, ablation SIGReg et baseline random shooting.
+- [x] Étude on-policy avec actions exécutées, coût de calcul et cas d'échec.
+- [ ] Ablation SIGReg et baseline random shooting.
 - [ ] Tableau final des limites : dépendance aux données, écart rollout/réalité, coût de planning et cas d'échec.
 - [ ] Licence racine, citation et release versionnée.
 

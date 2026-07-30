@@ -163,17 +163,18 @@ Les copies versionnées utilisées par ce rapport sont disponibles dans
 [docs/results](results/) : métriques par frame, résumés par épisode, jointure
 CEM et fichiers JSON de protocole.
 
-## Prochaine étape
+## Validation on-policy associée
 
-Instrumenter chaque décision CEM pour sauvegarder :
+La validation proposée par ce rapport a depuis été réalisée. Chaque décision
+CEM conserve le plan final, ses latents prédits et les actions réellement
+envoyées à PushT ; les observations et états factuels sont alignés aux temps
+`t=5,10,…,25`.
 
-1. les 25 actions finalement choisies ;
-2. les latents prédits pour ces actions ;
-3. les images et états réellement obtenus après chaque bloc de cinq actions ;
-4. l'écart latent et physique on-policy à `t=5,10,…,25`.
+Sur les mêmes 24 cas stratifiés, `receding_horizon=5` obtient 21 succès contre 7
+pour `receding_horizon=1`. La replanification plus fréquente utilise cinq fois
+plus de rollouts sans réduire l'erreur factuelle à cinq actions. L'erreur
+on-policy longue portée distingue les trois échecs RH=5 dans cet échantillon,
+mais n'explique pas à elle seule la dégradation RH=1.
 
-Il faudra ensuite comparer `receding_horizon=5` au mode plus fermé
-`receding_horizon=1` sur les mêmes épisodes. Si l'erreur on-policy explique les
-échecs et diminue avec la replanification fréquente, la priorité sera une
-résolution temporelle plus fine ou un modèle `action_block=1`. Sinon, il faudra
-améliorer le coût CEM ou le solveur plutôt que réentraîner le décodeur.
+Le protocole, les limites et les artefacts sont publiés dans le
+[rapport on-policy](on_policy_cem_error.md).

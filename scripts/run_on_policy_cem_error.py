@@ -21,6 +21,7 @@ import imageio.v2 as imageio
 import matplotlib
 import numpy as np
 import torch
+from sklearn.metrics import roc_auc_score
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -248,8 +249,8 @@ def write_csv(path: Path, rows: list[dict]) -> None:
         writer.writeheader(); writer.writerows(rows)
 
 
-def make_figures(rows: list[dict], episodes: list[dict]) -> None:
-    ASSETS.mkdir(exist_ok=True)
+def make_figures(rows: list[dict], episodes: list[dict], assets_dir: Path) -> None:
+    assets_dir.mkdir(parents=True, exist_ok=True)
     figure, axes = plt.subplots(1, 2, figsize=(12, 4.5), constrained_layout=True)
     for rh, colour in ((5, "#3366cc"), (1, "#dc3912")):
         selected = [r for r in rows if r["analysis"] == "decision_forecast" and r["branch_executed"] and r["receding_horizon"] == rh]
@@ -259,16 +260,28 @@ def make_figures(rows: list[dict], episodes: list[dict]) -> None:
     axes[0].set(xlabel="horizon (actions)", ylabel="MSE latente", title="Erreur on-policy à la décision")
     axes[1].set(xlabel="horizon (actions)", ylabel="erreur T (px)", title="Erreur physique décodée")
     for axis in axes: axis.grid(alpha=.25); axis.legend()
-    figure.savefig(ASSETS / "on_policy_cem_errors_by_horizon.png", dpi=180); plt.close(figure)
+    figure.savefig(assets_dir / "on_policy_cem_errors_by_horizon.png", dpi=180); plt.close(figure)
     figure, axis = plt.subplots(figsize=(6, 4.5), constrained_layout=True)
     for rh, colour in ((5, "#3366cc"), (1, "#dc3912")):
         data = [r for r in rows if r["analysis"] == "decision_forecast" and r["branch_executed"] and r["receding_horizon"] == rh and r["horizon_actions"] == 5]
         axis.scatter([r["latent_mse"] for r in data], [r["block_error_px"] for r in data], c=colour, label=f"RH={rh}", alpha=.75)
     axis.set(xlabel="MSE latente à 5 actions", ylabel="erreur T décodée (px)", title="Erreur latente et erreur de pose (pas le résultat du contrôle)")
-    axis.grid(alpha=.25); axis.legend(); figure.savefig(ASSETS / "on_policy_cem_latent_pose_link.png", dpi=180); plt.close(figure)
+    axis.grid(alpha=.25); axis.legend(); figure.savefig(assets_dir / "on_policy_cem_latent_pose_link.png", dpi=180); plt.close(figure)
+
+    figure, axes = plt.subplots(1, 2, figsize=(11, 4), constrained_layout=True)
+    for axis, rh in zip(axes, (5, 1)):
+        episode_success = {row["episode"]: row["success"] for row in episodes if row["receding_horizon"] == rh}
+        data = [row for row in rows if row["analysis"] == "decision_forecast" and row["receding_horizon"] == rh and row["branch_executed"] and row["horizon_actions"] == 5]
+        by_episode = {ep: np.median([r["block_error_px"] for r in data if r["episode"] == ep]) for ep in episode_success}
+        for success, color, name in ((True, "#2ca02c", "success"), (False, "#d62728", "failure")):
+            vals = [(ep, value) for ep, value in by_episode.items() if episode_success[ep] == success]
+            axis.scatter([ep for ep, _ in vals], [value for _, value in vals], c=color, label=f"{name} (n={len(vals)})")
+        axis.set(title=f"RH={rh}: error → episode result", xlabel="episode id", ylabel="median factual block error at 5 actions (px)")
+        axis.grid(alpha=.25); axis.legend()
+    figure.savefig(assets_dir / "on_policy_cem_error_outcome.png", dpi=180); plt.close(figure)
 
 
-def write_example_gif(raw_paths: list[Path], want_success: bool, pixel_decoder, label: str) -> bool:
+def write_example_gif(raw_paths: list[Path], want_success: bool, pixel_decoder, label: str, assets_dir: Path) -> bool:
     """Render one factual selected-plan rollout; false when that class is absent."""
     for raw_path in raw_paths:
         execution, metadata = read_versioned_npz(raw_path, EXECUTION_SCHEMA_VERSION)
@@ -289,15 +302,49 @@ def write_example_gif(raw_paths: list[Path], want_success: bool, pixel_decoder, 
                     label_panel(images[index], "Prédit (plan CEM sélectionné)"),
                     label_panel(heatmap_difference(real, images[index]), "Erreur visuelle"),
                 ), axis=1))
-            imageio.mimsave(ASSETS / f"on_policy_cem_{label}.gif", panels, duration=550, loop=0)
+            imageio.mimsave(assets_dir / f"on_policy_cem_{label}.gif", panels, duration=550, loop=0)
             return True
     return False
+
+
+def error_outcome_summary(rows: list[dict], episodes: list[dict]) -> dict:
+    """Aggregate each requested factual error to one value per episode before AUC."""
+    outcome = {(r["receding_horizon"], r["episode"]): bool(r["success"]) for r in episodes}
+    specs = (("decision_forecast_5", "decision_forecast", 5), ("decision_forecast_25", "decision_forecast", 25), ("executed_action_flow_25", "executed_action_flow", 25))
+    result = {}
+    for rh in (5, 1):
+        result[f"rh{rh}"] = {}
+        for name, analysis, horizon in specs:
+            selected = [r for r in rows if r["receding_horizon"] == rh and r["analysis"] == analysis and r["horizon_actions"] == horizon and r["branch_executed"]]
+            per_episode = {ep: [r for r in selected if r["episode"] == ep] for key_rh, ep in outcome if key_rh == rh}
+            metrics = {}
+            for metric in ("latent_mse", "block_error_px", "block_excess_error_px"):
+                values = [(outcome[(rh, ep)], float(np.median([r[metric] for r in vals]))) for ep, vals in per_episode.items() if vals]
+                success = [value for ok, value in values if ok]; failure = [value for ok, value in values if not ok]
+                metrics[metric] = {"episodes": len(values), "success_count": len(success), "failure_count": len(failure), "success_median": float(np.median(success)) if success else None, "failure_median": float(np.median(failure)) if failure else None, "failure_auc": float(roc_auc_score([not ok for ok, _ in values], [value for _, value in values])) if success and failure else None}
+            result[f"rh{rh}"][name] = metrics
+    return result
+
+
+def cost_summary(episodes: list[dict], raw_paths: dict[int, list[Path]]) -> dict:
+    out = {}
+    for rh in (5, 1):
+        calls = []
+        for path in raw_paths[rh]:
+            _, metadata = read_versioned_npz(path, EXECUTION_SCHEMA_VERSION)
+            calls.extend(metadata["planning_times_seconds_per_batch_mpc_call"])
+        condition = [r for r in episodes if r["receding_horizon"] == rh]
+        total = float(sum(calls))
+        out[f"rh{rh}"] = {"mpc_batch_calls": len(calls), "decisions_per_episode": int(condition[0]["decisions"]), "cem_rollouts_per_episode": int(condition[0]["model_rollouts_cem"]), "final_plan_inferences_per_episode": int(condition[0]["model_rollouts_final_inference"]), "total_batch_wall_seconds": total, "mean_seconds_per_mpc_batch_call": float(np.mean(calls)), "mean_seconds_per_environment_decision": total / len(condition) / int(condition[0]["decisions"]), "mean_seconds_per_episode": total / len(condition)}
+    return out
 
 
 def main() -> None:
     args = parse_args(); cases = read_cases(1 if args.smoke else None)
     stable = Path(os.environ["STABLEWM_HOME"])
-    raw_root = args.raw_root or stable / "pusht/on_policy_cem"
+    raw_root = args.raw_root or stable / ("pusht/on_policy_cem_smoke" if args.smoke else "pusht/on_policy_cem")
+    results_dir = raw_root / "results" if args.smoke else ROOT / "docs/results"
+    assets_dir = raw_root / "assets" if args.smoke else ROOT / "docs/assets"
     if not args.skip_evaluation:
         all_paths = {rh: run_condition(cases, rh, raw_root, args.batch_size) for rh in (5, 1)}
     else:
@@ -312,24 +359,22 @@ def main() -> None:
         for path in paths:
             frame_rows, episode_rows, flows = analyse_execution(path, rh, model, decoder, torch.device("cuda"))
             rows.extend(frame_rows); rows.extend(flows); episodes.extend(episode_rows)
-    # Attach the pre-existing physical proximity field.  Success itself above is
-    # the actual outcome for each condition, never copied from RH=5.
-    source = {(int(r["episode"]), int(r["local_start"])): r for r in cases}
-    for row in episodes:
-        item = source[(row["episode"], row["start_step"])]
-        row["best_normalized_goal_error"] = float(item["best_normalized_goal_error"])
-    if args.smoke:
-        RESULTS, ASSETS = raw_root / "smoke_results", raw_root / "smoke_assets"
-    RESULTS.mkdir(exist_ok=True); write_csv(RESULTS / "on_policy_cem_frame_metrics.csv", rows); write_csv(RESULTS / "on_policy_cem_episode_metrics.csv", episodes)
+    results_dir.mkdir(parents=True, exist_ok=True)
+    write_csv(results_dir / "on_policy_cem_frame_metrics.csv", rows)
+    write_csv(results_dir / "on_policy_cem_episode_metrics.csv", episodes)
     factual = [r for r in rows if r["analysis"] == "decision_forecast" and r["branch_executed"]]
     aggregates = {f"rh{rh}": {str(h): {key: quantiles([r[key] for r in factual if r["receding_horizon"] == rh and r["horizon_actions"] == h]) for key in ("latent_mse", "pusher_error_px", "block_error_px", "block_angle_error_deg")} for h in sorted({r["horizon_actions"] for r in factual if r["receding_horizon"] == rh})} for rh in (5, 1)}
-    result = {"protocol": {"checkpoint": "official LeWM", "cem_seed": 42, "population": 300, "iterations": 30, "elites": 30, "horizon_blocks": 5, "action_block": 5, "goal_actions": 25, "budget_actions": 50, "cases": [{"episode": int(r["episode"]), "start_step": int(r["local_start"])} for r in cases], "interpretation_limit": "The 24 cases are risk-stratified and include known failures; success proportions are not population estimates."}, "aggregates": aggregates, "artifacts": {"frame_metrics": "on_policy_cem_frame_metrics.csv", "episode_metrics": "on_policy_cem_episode_metrics.csv", "errors_by_horizon": "docs/assets/on_policy_cem_errors_by_horizon.png", "latent_pose_link": "docs/assets/on_policy_cem_latent_pose_link.png", "raw_root": "$STABLEWM_HOME/pusht/on_policy_cem"}}
-    (RESULTS / "on_policy_cem_results.json").write_text(json.dumps(result, indent=2) + "\n")
-    make_figures(rows, episodes)
+    by_key = {(r["episode"], r["start_step"]): {} for r in episodes}
+    for row in episodes: by_key[(row["episode"], row["start_step"])][row["receding_horizon"]] = row["success"]
+    paired = {"both_success": sum(v.get(5) and v.get(1) for v in by_key.values()), "rh5_only": sum(v.get(5) and not v.get(1) for v in by_key.values()), "rh1_only": sum(not v.get(5) and v.get(1) for v in by_key.values()), "both_failure": sum(not v.get(5) and not v.get(1) for v in by_key.values())}
+    first_metadata = read_versioned_npz(all_paths[5][0], EXECUTION_SCHEMA_VERSION)[1]
+    result = {"protocol": {"checkpoint": "official LeWM", "checkpoint_sha256": first_metadata["checkpoint_sha256"], "cem_seed": 42, "population": 300, "iterations": 30, "elites": 30, "horizon_blocks": 5, "action_block": 5, "goal_actions": 25, "budget_actions": 50, "cases": [{"episode": int(r["episode"]), "start_step": int(r["local_start"])} for r in cases]}, "evaluation_provenance": first_metadata["code_versions"], "postprocessing_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(), "success": {f"rh{rh}": int(sum(r["success"] for r in episodes if r["receding_horizon"] == rh)) for rh in (5, 1)}, "paired_success": paired, "planning_cost": cost_summary(episodes, all_paths), "decision_forecast_aggregates": aggregates, "error_outcome_association_episode_median": error_outcome_summary(rows, episodes), "limitations": ["The 24 cases are risk-stratified, not a population sample.", "AUCs are descriptive with only three RH=5 failures; no causal claim follows.", "PushT state observations can leave their declared bounds (agent xy and velocity)."], "artifacts": {"frame_metrics": "docs/results/on_policy_cem_frame_metrics.csv", "episode_metrics": "docs/results/on_policy_cem_episode_metrics.csv", "errors_by_horizon": "docs/assets/on_policy_cem_errors_by_horizon.png", "error_outcome": "docs/assets/on_policy_cem_error_outcome.png", "latent_pose_link": "docs/assets/on_policy_cem_latent_pose_link.png", "success_gif": "docs/assets/on_policy_cem_success.gif", "failure_gif": "docs/assets/on_policy_cem_failure.gif", "raw_root": "$STABLEWM_HOME/pusht/on_policy_cem"}}
+    (results_dir / "on_policy_cem_results.json").write_text(json.dumps(result, indent=2) + "\n")
+    make_figures(rows, episodes, assets_dir)
     flat_raw_paths = [path for paths in all_paths.values() for path in paths]
-    if not write_example_gif(flat_raw_paths, True, pixel_decoder, "success"):
+    if not write_example_gif(flat_raw_paths, True, pixel_decoder, "success", assets_dir):
         print("No success GIF available in this run.")
-    if not write_example_gif(flat_raw_paths, False, pixel_decoder, "failure"):
+    if not write_example_gif(flat_raw_paths, False, pixel_decoder, "failure", assets_dir):
         print("No failure GIF available in this run.")
     print(json.dumps(result["aggregates"], indent=2))
 

@@ -332,11 +332,14 @@ def render_frame(episode: EpisodeRender, decision_index: int, phase: str, t: int
         draw_timeline(ax_timeline, t, decision_index)
 
     draw_result_panel(ax_result, episode)
+    # Keep the headline inside the GIF canvas.  A single line is cropped by
+    # the renderer at the published 950 px width, which hides the episode
+    # identifier precisely where readers need it most.
     figure.suptitle(
         f"Épisode {episode.episode} · départ {episode.start_step} · "
-        f"{'SUCCÈS' if episode.success else 'ÉCHEC'} — CEM : population 300, 30 itérations, 30 élites, "
-        f"horizon 5 blocs de 5 actions, objectif à +25 actions, budget 50",
-        fontsize=10,
+        f"{'SUCCÈS' if episode.success else 'ÉCHEC'}\n"
+        "CEM : 300 candidats · 30 itérations · 30 élites · 5 blocs × 5 actions · objectif +25 · budget 50",
+        fontsize=9,
         fontweight="bold",
     )
     figure.canvas.draw()

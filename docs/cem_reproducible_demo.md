@@ -65,8 +65,8 @@ décisions, et le tableau ci-dessous est un lien d'épisode 3876 → 1766.
 Le rerun propre a reproduit les deux résultats connus : **épisode 3876 réussi,
 épisode 1766 échoué**. Les plans du rerun ne sont pas bit-à-bit identiques à
 ceux de l'étude on-policy précédente (réductions GPU non déterministes), mais
-les résultats des épisodes sont inchangés ; le rerun lui-même est déterministe
-(voir la validation).
+les résultats des épisodes sont inchangés. Seul le **post-traitement** est
+bit-à-bit déterministe (voir la validation) ; l'évaluation GPU ne l'est pas.
 
 ### Pourquoi le cas réussi réussit
 

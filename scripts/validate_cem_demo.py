@@ -195,12 +195,20 @@ def main() -> int:
 
     # -- provenance and git hygiene
     try:
-        provenance = git_provenance(args.lab_root, args.lewm_root, strict=False)
-        check(provenance["lab_commit"] == manifest["provenance"]["lab_commit"], "provenance_lab", failures)
-        check(provenance["lewm_commit"] == manifest["provenance"]["lewm_commit"], "provenance_lewm", failures)
+        git_provenance(args.lab_root, args.lewm_root, strict=False)
     except RuntimeError as error:
         failures.append(f"provenance: {error}")
+    recorded = {
+        "lab": [manifest["provenance"]["evaluation_commit"], manifest["provenance"]["postprocessing_commit"]],
+        "lewm": [manifest["provenance"]["evaluation_lewm_commit"]],
+    }
     for label, root in (("lab", args.lab_root), ("lewm", args.lewm_root)):
+        for commit in recorded[label]:
+            result = subprocess.run(
+                ["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"],
+                capture_output=True, text=True,
+            )
+            check(result.returncode == 0, f"recorded_commit_{label}", failures, commit)
         result = subprocess.run(
             ["git", "-C", str(root), "diff", "--check"], capture_output=True, text=True
         )

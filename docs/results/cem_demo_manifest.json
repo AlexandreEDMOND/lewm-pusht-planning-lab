@@ -269,10 +269,10 @@
     "evaluation_lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
     "hardware": "NVIDIA GeForce RTX 3090",
     "lab_clean": true,
-    "lab_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+    "lab_commit": "c8d2607f21311aed258894577c982cd705b41600",
     "lewm_clean": true,
     "lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
-    "postprocessing_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+    "postprocessing_commit": "c8d2607f21311aed258894577c982cd705b41600",
     "postprocessing_note": "the evaluation commit is read from the raw execution sidecar recorded by eval.py at run time; the post-processing commit is the HEAD of this repository when the published artifacts were generated. They differ only when a correction was committed after the evaluation run.",
     "seed": 42
   },

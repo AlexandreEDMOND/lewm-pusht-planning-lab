@@ -98,14 +98,14 @@
         "sha256": "9cece661a107815d33fb0cc267d296464aaeac86cc430a68aa4eae20fb94e640"
       },
       {
-        "bytes": 1033295,
+        "bytes": 1079995,
         "path": "docs/assets/cem_demo_success.gif",
-        "sha256": "639d56db64b600c7fc1fcc543d947b7b430b4a491839ce1ba947a63ff84b374a"
+        "sha256": "0605d0f1d59648b80c9a4b92ae99ea145111ceb18097fba0c82f3866776d1296"
       },
       {
-        "bytes": 1067187,
+        "bytes": 1054922,
         "path": "docs/assets/cem_demo_failure.gif",
-        "sha256": "1d48ed88051be691dcfa7217afdb61a271f2f7b41ec46aaf9334f8db36c0ce82"
+        "sha256": "c576cf3e5e4b0b6ddda6e7c3d41e3c47589e4025a6fe2d398a0d88ca1a1c814f"
       },
       {
         "bytes": 140328,
@@ -269,10 +269,10 @@
     "evaluation_lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
     "hardware": "NVIDIA GeForce RTX 3090",
     "lab_clean": true,
-    "lab_commit": "9fcac93f9990ebc704863e92c0a628b23e3e12ef",
+    "lab_commit": "85da3fa978aa9566c2b40ba4d817edd4a7e971bb",
     "lewm_clean": true,
     "lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
-    "postprocessing_commit": "9fcac93f9990ebc704863e92c0a628b23e3e12ef",
+    "postprocessing_commit": "85da3fa978aa9566c2b40ba4d817edd4a7e971bb",
     "postprocessing_note": "the evaluation commit is read from the raw execution sidecar recorded by eval.py at run time; the post-processing commit is the HEAD of this repository when the published artifacts were generated. They differ only when a correction was committed after the evaluation run.",
     "seed": 42
   },

@@ -172,8 +172,8 @@ def main() -> int:
     check(total <= MAX_TOTAL_COMPACT_BYTES, "compact_total", failures, f"{total} bytes")
 
     # -- hashes and missing artifacts
-    recorded = {entry["path"]: entry for entry in manifest["artifacts"]["versioned"]}
-    for path, entry in recorded.items():
+    versioned_entries = {entry["path"]: entry for entry in manifest["artifacts"]["versioned"]}
+    for path, entry in versioned_entries.items():
         full = (args.lab_root / path).resolve()
         check(full.is_file(), "artifact_missing", failures, path)
         if full.is_file():
@@ -198,12 +198,12 @@ def main() -> int:
         git_provenance(args.lab_root, args.lewm_root, strict=False)
     except RuntimeError as error:
         failures.append(f"provenance: {error}")
-    recorded = {
+    recorded_commits = {
         "lab": [manifest["provenance"]["evaluation_commit"], manifest["provenance"]["postprocessing_commit"]],
         "lewm": [manifest["provenance"]["evaluation_lewm_commit"]],
     }
     for label, root in (("lab", args.lab_root), ("lewm", args.lewm_root)):
-        for commit in recorded[label]:
+        for commit in recorded_commits[label]:
             result = subprocess.run(
                 ["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"],
                 capture_output=True, text=True,
@@ -219,7 +219,7 @@ def main() -> int:
         return 1
     print(
         f"OK: {len(rows)} episodes, {len(compact_files)} compact traces "
-        f"({total} bytes total), {len(recorded)} versioned artifacts verified."
+        f"({total} bytes total), {len(versioned_entries)} versioned artifacts verified."
     )
     return 0
 

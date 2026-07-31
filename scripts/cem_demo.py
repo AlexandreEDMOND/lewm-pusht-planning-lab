@@ -511,10 +511,14 @@ def find_case_environment(
     return int(matches[0])
 
 
-def markdown_links_valid(docs_dir: Path) -> list[str]:
+def markdown_links_valid(docs_dir: Path, root_readme: Path | None = None) -> list[str]:
     """Return broken local Markdown links (file or directory targets)."""
     broken: list[str] = []
-    for markdown in sorted(docs_dir.rglob("*.md")):
+    candidates = sorted(docs_dir.rglob("*.md"))
+    if root_readme is not None and root_readme.is_file():
+        candidates.insert(0, root_readme)
+    for markdown in candidates:
+        base = markdown.parent
         for line_number, line in enumerate(markdown.read_text().splitlines(), start=1):
             for target in _markdown_link_targets(line):
                 if _is_remote(target):

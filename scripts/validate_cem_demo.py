@@ -190,7 +190,7 @@ def main() -> int:
         failures.append(str(error))
 
     # -- markdown links
-    for broken in markdown_links_valid(args.lab_root / "docs"):
+    for broken in markdown_links_valid(args.lab_root / "docs", args.lab_root / "README.md"):
         failures.append(f"markdown link: {broken}")
 
     # -- provenance and git hygiene

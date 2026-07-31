@@ -240,7 +240,6 @@ def build_episode_records(
 ) -> tuple[list[dict], list[EpisodeRender], dict]:
     compact_dir = args.results_dir / "cem_demo_compact"
     compact_dir.mkdir(parents=True, exist_ok=True)
-    provenance = git_provenance(args.lab_root, args.lewm_root, strict=False)
     episode_rows: list[dict] = []
     episodes_render: list[EpisodeRender] = []
     compact_files: list[dict] = []
@@ -287,8 +286,13 @@ def build_episode_records(
                 decision_action_offsets=offsets,
                 seed=int(metadata["cem_seed"]),
                 checkpoint_sha256=metadata["checkpoint_sha256"],
-                lab_commit=provenance["lab_commit"],
-                lewm_commit=provenance["lewm_commit"],
+                lab_commit=metadata["code_versions"]["lab"],
+                lewm_commit=metadata["code_versions"]["lewm"],
+            )
+            compact_metadata["provenance_note"] = (
+                "the commits recorded here are the evaluation commits read from "
+                "the raw execution sidecar; the post-processing commit is "
+                "recorded in the manifest"
             )
             compact_metadata["block_metrics"] = latent_metrics[environment][decision]
             compact_metadata["planning_seconds_episode_estimate"] = per_decision_planning[-1]

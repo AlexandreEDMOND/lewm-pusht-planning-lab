@@ -121,9 +121,10 @@ def main() -> int:
     check(len(compact_files) == 4, "compact_coverage", failures, f"expected 4 compact traces, got {len(compact_files)}")
     for compact_path in compact_files:
         arrays, metadata = validate_compact_trace(compact_path, COMPACT_TRACE_SCHEMA_VERSION)
-        check(int(metadata["iterations"]) == ITERATIONS, "iterations", failures, compact_path.name)
-        check(int(metadata["population"]) == POPULATION, "population", failures, compact_path.name)
-        check(int(metadata["elites"]) == ELITE_COUNT, "elites", failures, compact_path.name)
+        protocol = metadata["protocol"]
+        check(int(protocol["iterations"]) == ITERATIONS, "iterations", failures, compact_path.name)
+        check(int(protocol["population"]) == POPULATION, "population", failures, compact_path.name)
+        check(int(protocol["elites"]) == ELITE_COUNT, "elites", failures, compact_path.name)
         check(arrays["elite_costs"].shape == (ITERATIONS, ELITE_COUNT), "elite_shape", failures, compact_path.name)
         check(
             int(metadata["decision_index"]) in (0, 1) and metadata["environment_index"] in (0, 1),

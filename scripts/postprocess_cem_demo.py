@@ -114,7 +114,12 @@ def load_demo_inputs(raw_root: Path) -> tuple[dict[str, np.ndarray], dict]:
 
 def verify_protocol(arrays: dict[str, np.ndarray], metadata: dict, lab_root: Path, lewm_root: Path) -> None:
     """Reject provenance or protocol drift before any artifact is written."""
-    git_provenance(lab_root, lewm_root, strict=False)
+    git_provenance(
+        lab_root,
+        lewm_root,
+        strict=False,
+        ignore_paths=("docs/results/cem_demo_manifest.json",),
+    )
     if metadata["checkpoint_sha256"] != EXPECTED_CHECKPOINT_SHA256:
         raise RuntimeError(
             f"Checkpoint SHA-256 mismatch: {metadata['checkpoint_sha256']}"

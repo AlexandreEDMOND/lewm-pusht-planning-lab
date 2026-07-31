@@ -180,6 +180,7 @@
     "population": 300,
     "receding_horizon": 5
   },
+  "provenance_note": "the commits recorded here are the evaluation commits read from the raw execution sidecar; the post-processing commit is recorded in the manifest",
   "schema_version": 1,
   "seed": 42,
   "semantics": {

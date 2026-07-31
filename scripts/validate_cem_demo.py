@@ -66,11 +66,22 @@ def check(condition: bool, label: str, failures: list[str], detail: str = "") ->
 def validate_finite_arrays(compact_root: Path, failures: list[str]) -> None:
     for path in sorted(compact_root.glob("compact_trace_*.npz")):
         arrays, _ = validate_compact_trace(path, COMPACT_TRACE_SCHEMA_VERSION)
+        counts = arrays["kept_candidate_counts"]
         for key, value in arrays.items():
-            if np.issubdtype(value.dtype, np.floating):
+            if not np.issubdtype(value.dtype, np.floating):
+                continue
+            if key.startswith("kept_"):
+                # Columns beyond the per-iteration kept count are documented NaN
+                # padding; only the valid region must be finite.
+                bad = 0
+                for iteration in range(len(counts)):
+                    count = int(counts[iteration])
+                    valid = value[iteration, :count]
+                    bad += int(np.isnan(valid).sum()) + int(np.isinf(valid).sum())
+            else:
                 bad = int(np.isnan(value).sum()) + int(np.isinf(value).sum())
-                if bad:
-                    failures.append(f"{path.name}[{key}]: {bad} NaN/Inf values")
+            if bad:
+                failures.append(f"{path.name}[{key}]: {bad} NaN/Inf values")
 
 
 def main() -> int:

@@ -151,38 +151,46 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def git_provenance(lab_root: Path, lewm_root: Path, strict: bool = False) -> dict[str, Any]:
+def git_provenance(
+    lab_root: Path,
+    lewm_root: Path,
+    strict: bool = False,
+    ignore_paths: Iterable[Path | str] = (),
+) -> dict[str, Any]:
     """Return exact commits and cleanliness, rejecting dirty provenance.
 
     ``strict=True`` also rejects untracked files, which is only appropriate
-    before any output of this command has been written.  Without it, the check
-    covers tracked content (working tree against HEAD), matching the rule used
-    by ``eval.py`` when it records on-policy executions.
+    before any output of this command has been written.  ``ignore_paths``
+    (relative to the repository root) are excluded from the tracked-change
+    check: the demo manifest records the post-processing HEAD and is therefore
+    necessarily rewritten by the command that produces it; its content is
+    instead verified by comparing two reruns.
     """
+    ignored = {str(Path(path)) for path in ignore_paths}
     result: dict[str, Any] = {}
     for label, root in (("lab", lab_root), ("lewm", lewm_root)):
         try:
             commit = subprocess.check_output(
                 ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
             ).strip()
-            subprocess.run(
-                ["git", "-C", str(root), "diff", "--quiet", "HEAD"], check=True
-            )
-            tracked_clean = True
-        except (OSError, subprocess.CalledProcessError):
-            raise RuntimeError(f"Git provenance requires a clean tracked tree: {root}")
-        untracked_clean = True
-        if strict:
             status = subprocess.run(
                 ["git", "-C", str(root), "status", "--porcelain"],
                 check=True, text=True, capture_output=True,
             ).stdout
-            untracked_clean = not status.strip()
-        clean = tracked_clean and untracked_clean
-        if not clean:
+        except (OSError, subprocess.CalledProcessError):
+            raise RuntimeError(f"Git provenance requires a clean tracked tree: {root}")
+        changes: list[str] = []
+        for line in status.splitlines():
+            path = line[3:]
+            if path in ignored:
+                continue
+            if line.startswith("??") and not strict:
+                continue
+            changes.append(line)
+        if changes:
             raise RuntimeError(f"Refusing dirty provenance for {label} at {root}")
         result[label + "_commit"] = commit
-        result[label + "_clean"] = clean
+        result[label + "_clean"] = True
     return result
 
 

@@ -601,7 +601,12 @@ def main() -> None:
     overview_path = args.assets_dir / "cem_demo_overview.png"
     write_overview_png(episodes_render, overview_path)
 
-    provenance = git_provenance(args.lab_root, args.lewm_root, strict=False)
+    provenance = git_provenance(
+        args.lab_root,
+        args.lewm_root,
+        strict=False,
+        ignore_paths=("docs/results/cem_demo_manifest.json",),
+    )
     manifest_path = args.results_dir / "cem_demo_manifest.json"
     manifest = write_manifest(
         manifest_path,

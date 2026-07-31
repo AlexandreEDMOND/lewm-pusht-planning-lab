@@ -57,6 +57,25 @@ La population d'actions se resserre au fil des itérations. Les élites détermi
 la prochaine distribution, tandis que les courbes montrent la convergence du
 coût et la dispersion de la recherche.
 
+### Démonstrateur reproductible de bout en bout
+
+Une commande unique relie, sur deux épisodes PushT fixes, la recherche CEM
+(population, élites, convergence), les plans sélectionnés, les actions
+réellement exécutées, les futurs prédits par LeWM, la trajectoire obtenue et le
+résultat final — avec provenance propre, traces compactes versionnées et
+hashes.
+
+![Synthèse de la démonstration : état final annoté et convergence CEM des deux décisions pour les épisodes 3876 (succès) et 1766 (échec).](docs/assets/cem_demo_overview.png)
+
+```bash
+bash scripts/run_reproducible_cem_demo.sh
+```
+
+Le [rapport de la démonstration](docs/cem_reproducible_demo.md) explique ce que
+montrent et ne montrent pas les animations
+([succès](docs/assets/cem_demo_success.gif),
+[échec](docs/assets/cem_demo_failure.gif)).
+
 ### Futur prédit et futur réel
 
 ![Erreur du modèle selon l'horizon de prédiction sous les actions choisies par CEM.](docs/assets/on_policy_cem_errors_by_horizon.png)
@@ -90,6 +109,7 @@ uv sync
 bash scripts/download_assets.sh all
 bash scripts/check_phase0.sh --require-cuda --require-assets
 bash scripts/evaluate_reference.sh 42 5
+bash scripts/run_reproducible_cem_demo.sh
 ```
 
 Les artefacts lourds sont écrits sous `STABLEWM_HOME` et ne sont pas ajoutés au
@@ -117,6 +137,7 @@ uv run --project . python scripts/run_on_policy_cem_error.py --batch-size 4
 
 - [Rapport de validation : tests, résultats et limites](docs/validation_report.md)
 - [Suivi du développement](ROADMAP.md)
+- [Démonstrateur CEM reproductible de bout en bout](docs/cem_reproducible_demo.md)
 - [Erreur on-policy sous les actions choisies par CEM](docs/on_policy_cem_error.md)
 - [Généralisation des rollouts sur 128 épisodes](docs/rollout_generalization.md)
 - [Faisabilité du décodage visuel](docs/visual_decoder_feasibility.md)

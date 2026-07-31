@@ -1,0 +1,223 @@
+{
+  "array_shapes": {
+    "cost_stats_mean": [
+      30
+    ],
+    "cost_stats_median": [
+      30
+    ],
+    "cost_stats_min": [
+      30
+    ],
+    "cost_stats_p90": [
+      30
+    ],
+    "cost_stats_p95": [
+      30
+    ],
+    "decision_action_offsets": [
+      2
+    ],
+    "elite_actions": [
+      30,
+      30,
+      5,
+      10
+    ],
+    "elite_costs": [
+      30,
+      30
+    ],
+    "elite_terminal_latents": [
+      30,
+      30,
+      192
+    ],
+    "executed_action_indices": [
+      50
+    ],
+    "executed_actions_normalized": [
+      50,
+      2
+    ],
+    "executed_actions_postprocessed": [
+      50,
+      2
+    ],
+    "final_plan_actions": [
+      5,
+      10
+    ],
+    "final_plan_cost": [
+      1
+    ],
+    "final_plan_latents": [
+      6,
+      192
+    ],
+    "goal_latent": [
+      192
+    ],
+    "kept_candidate_actions": [
+      30,
+      60,
+      5,
+      10
+    ],
+    "kept_candidate_costs": [
+      30,
+      60
+    ],
+    "kept_candidate_counts": [
+      30
+    ],
+    "kept_candidate_indices": [
+      30,
+      60
+    ],
+    "kept_terminal_latents": [
+      30,
+      60,
+      192
+    ],
+    "mean_after": [
+      30,
+      5,
+      10
+    ],
+    "mean_before": [
+      30,
+      5,
+      10
+    ],
+    "real_latents": [
+      6,
+      192
+    ],
+    "std_after": [
+      30,
+      5,
+      10
+    ],
+    "std_before": [
+      30,
+      5,
+      10
+    ]
+  },
+  "block_metrics": {
+    "block_angle_error_deg": [
+      1.8680420731676213,
+      2.6085829202674486,
+      4.13020563148363,
+      6.747564181600893,
+      12.22982139315458
+    ],
+    "block_position_error_px": [
+      1.9608224261593492,
+      1.3120942303966971,
+      5.106674826006996,
+      10.815481541930176,
+      20.43045431607585
+    ],
+    "comparison_note": "predicted: LeWM plan latent decoded by the structured decoder; real: simulator ground-truth state",
+    "decoder_ceiling_block_angle_error_deg": [
+      1.9697709106657912,
+      2.0293282371370074,
+      1.7291892325490479,
+      1.8864502474111178,
+      3.9414141561007865
+    ],
+    "decoder_ceiling_block_position_error_px": [
+      6.200371147506593,
+      4.077164981887028,
+      3.252584725486048,
+      4.265112835519242,
+      4.072864323002053
+    ],
+    "factual_blocks": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "latent_mse": [
+      0.004974656738340855,
+      0.00840913038700819,
+      0.011960352770984173,
+      0.026024172082543373,
+      0.060223713517189026
+    ]
+  },
+  "candidate_selection": {
+    "max_kept": 60,
+    "reconstruction_note": "candidates outside the kept set cannot be reconstructed from this compact trace",
+    "rule": "sorted union of the elite indices and the systematic sample 0, 10, ..., 290 of the 300 candidates, per CEM iteration",
+    "step": 10
+  },
+  "checkpoint_sha256": "a7f1ae0cfbfad8aca613f737d66d12220fa2a8e345c5b46de8b89496c44ced62",
+  "decision_action_offsets": [
+    0,
+    25
+  ],
+  "decision_index": 0,
+  "environment_index": 0,
+  "episode": 1766,
+  "lab_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+  "lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
+  "planning_seconds_batch": 10.742421831000229,
+  "planning_seconds_episode_estimate": 5.371210915500114,
+  "protocol": {
+    "action_block": 5,
+    "action_dim": 10,
+    "budget_actions": 50,
+    "elites": 30,
+    "goal_offset_steps": 25,
+    "horizon": 5,
+    "iterations": 30,
+    "latent_dim": 192,
+    "population": 300,
+    "receding_horizon": 5
+  },
+  "schema_version": 1,
+  "seed": 42,
+  "semantics": {
+    "cost_stats_mean": "mean candidate cost per iteration",
+    "cost_stats_median": "median candidate cost per iteration",
+    "cost_stats_min": "minimum candidate cost per iteration",
+    "cost_stats_p90": "90th percentile candidate cost per iteration",
+    "cost_stats_p95": "95th percentile candidate cost per iteration",
+    "decision_action_offsets": "elementary action offsets at which this episode replans",
+    "elite_actions": "actions of the elite candidates, (iteration, elite, horizon, action_dim)",
+    "elite_costs": "costs of the elite candidates, (iteration, elite)",
+    "elite_terminal_latents": "terminal latent of each elite candidate, (iteration, elite, latent_dim)",
+    "executed_action_indices": "elementary action indices executed in this rollout, 0..49",
+    "executed_actions_normalized": "normalized actions really sent to PushT, (budget, action_dim)",
+    "executed_actions_postprocessed": "physical actions really sent to PushT, (budget, action_dim)",
+    "final_plan_actions": "normalized actions of the selected plan (final CEM mean), (horizon, action_dim)",
+    "final_plan_cost": "latent cost of the selected plan",
+    "final_plan_latents": "latent rollout of the selected plan, (latent_time, latent_dim), index 0 is the context",
+    "goal_latent": "latent of the goal image used by the cost",
+    "kept_candidate_actions": "actions of the kept candidates, NaN padded",
+    "kept_candidate_costs": "costs of the kept candidates, NaN padded",
+    "kept_candidate_counts": "number of valid indices per iteration row",
+    "kept_candidate_indices": "deterministic candidate indices kept per iteration, -1 padded",
+    "kept_terminal_latents": "terminal latents of the kept candidates, NaN padded",
+    "mean_after": "CEM mean after the update (elite mean), (iteration, horizon, action_dim)",
+    "mean_before": "CEM mean before the iteration's distribution update, (iteration, horizon, action_dim)",
+    "real_latents": "latents of the real frames at block boundaries, (latent_time, latent_dim), index 0 is the context",
+    "std_after": "CEM standard deviation after the update (elite std, ddof=1)",
+    "std_before": "CEM standard deviation before the update, (iteration, horizon, action_dim)"
+  },
+  "start_step": 2,
+  "success": false,
+  "units": {
+    "costs": "official LeWM latent cost between predicted and goal embeddings (unitless)",
+    "latents": "LeWM CLS-projector embeddings, latent_dim values per latent time",
+    "normalized_actions": "model action space (z-scores of the dataset actions; WorldModelPolicy applies the inverse StandardScaler before sending actions to PushT)",
+    "positions": "PushT world pixels, window 512x512",
+    "postprocessed_actions": "exact arrays returned by WorldModelPolicy to PushT (action space [-1, 1]^2)",
+    "time": "elementary PushT actions (one environment step per action)"
+  }
+}

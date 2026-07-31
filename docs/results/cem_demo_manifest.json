@@ -1,0 +1,366 @@
+{
+  "artifacts": {
+    "heavy": [
+      {
+        "bytes": 1967,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/cem_demo_metrics.json",
+        "sha256": "9014d6683dcd078cde9c8f3df3b75d9863d3cf5c189465952a13798b17363c05"
+      },
+      {
+        "bytes": 9272,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/cem_demo_results.txt",
+        "sha256": "e7284e653fc90a949aac3afe1c7151088a205e6d3dd5eb741519887f9401bfd1"
+      },
+      {
+        "bytes": 924,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/plans/selected_plan_0000.json",
+        "sha256": "a85a882bde9b5bde8b9f1e7e81a8530d33c37fbd5f3d8c7fec731020eea0d41f"
+      },
+      {
+        "bytes": 106042,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/plans/selected_plan_0000.npz",
+        "sha256": "7ccf43bf608abea8737425f6b6942def8c52fc59f347af90473c833801bd5f37"
+      },
+      {
+        "bytes": 924,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/plans/selected_plan_0001.json",
+        "sha256": "3812cd90b1b7c0c46e98ef45c860e2599f176cdd80ab82e743556802b4fa82cd"
+      },
+      {
+        "bytes": 72621,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/plans/selected_plan_0001.npz",
+        "sha256": "04f11943078dddd2ca10c09295e7a8e945c435a632fa36b3e3d20a0172aa9983"
+      },
+      {
+        "bytes": 3928,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/raw/execution.json",
+        "sha256": "2b335e1541f736847ae0da49fe203cf8519bc296710dce81eb8df895d562b473"
+      },
+      {
+        "bytes": 282421,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/raw/execution.npz",
+        "sha256": "de9209cc117814d6e79cab8c2738f8bcd7718a6dafd30ce99ef0ea71607df9d9"
+      },
+      {
+        "bytes": 924,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/run_context.json",
+        "sha256": "8d35f18676c110035c4385e349d406f4aaa322104b65ebc46d50c1a23f5a8863"
+      },
+      {
+        "bytes": 871,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/traces/decision_0000.json",
+        "sha256": "29cf0fb9e10b2eeacb526072a85abf5099c6cc926e417224f117abacf8eeceb3"
+      },
+      {
+        "bytes": 67687042,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/traces/decision_0000.npz",
+        "sha256": "f681ed10d0ca4705fe7271fec626514dee57caa9ca449560ebef8192652afbbf"
+      },
+      {
+        "bytes": 871,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/traces/decision_0001.json",
+        "sha256": "3e833042632116df7639cf6532a72dc5046393eedec2ee9c211ab6cda0b8b4dc"
+      },
+      {
+        "bytes": 67710335,
+        "path": "$STABLEWM_HOME/pusht/reproducible_cem_demo/traces/decision_0001.npz",
+        "sha256": "b6c0c290d0e8e7701bf2d715d14673a4b10578d8fd9363e140d2ae9671e97ec1"
+      }
+    ],
+    "self_reference": {
+      "note": "the manifest cannot contain its own digest; scripts/validate_cem_demo.py recomputes it on every validation",
+      "path": "docs/results/cem_demo_manifest.json"
+    },
+    "versioned": [
+      {
+        "bytes": 1896,
+        "path": "docs/results/cem_demo_episode_metrics.csv",
+        "sha256": "327ccc0bb3fab3935e9619729df7e961d57064e7813d6ad54cdae9461ab70d3f"
+      },
+      {
+        "bytes": 2372083,
+        "path": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
+        "sha256": "3cf8ff0e18575fb8d103c109d9226893d5843dbfb072fc230922974551c47ec6"
+      },
+      {
+        "bytes": 2357791,
+        "path": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
+        "sha256": "364cf1e3b88af7412a12ea326634f43ebf725242d551d3945bb2da7e5a2ce576"
+      },
+      {
+        "bytes": 2358049,
+        "path": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
+        "sha256": "ffba81c57fc8e42b2ff29e693dd6c6f2a56c367c744cb23d45594ddcff0cf324"
+      },
+      {
+        "bytes": 2374024,
+        "path": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
+        "sha256": "9cece661a107815d33fb0cc267d296464aaeac86cc430a68aa4eae20fb94e640"
+      },
+      {
+        "bytes": 1033295,
+        "path": "docs/assets/cem_demo_success.gif",
+        "sha256": "639d56db64b600c7fc1fcc543d947b7b430b4a491839ce1ba947a63ff84b374a"
+      },
+      {
+        "bytes": 1067187,
+        "path": "docs/assets/cem_demo_failure.gif",
+        "sha256": "1d48ed88051be691dcfa7217afdb61a271f2f7b41ec46aaf9334f8db36c0ce82"
+      },
+      {
+        "bytes": 140328,
+        "path": "docs/assets/cem_demo_overview.png",
+        "sha256": "45cb8111b79c4f3522d6eb3e9c7702ecd864f137536da63cc5a7b61e7aa9b7bb"
+      }
+    ]
+  },
+  "candidate_selection": {
+    "reconstruction_note": "candidates outside the kept set cannot be reconstructed from the compact trace",
+    "rule": "per iteration, the compact trace keeps the sorted union of the 30 elite indices and the systematic sample 0,10,...,290 of the 300 candidates",
+    "step": 10
+  },
+  "compact_schema_version": 1,
+  "decisions": {
+    "action_offsets": [
+      0,
+      25
+    ],
+    "iterations_per_decision": 30,
+    "per_episode": 2,
+    "verification": "offsets verified from the recorded decision_index_per_action array of the raw execution, not simulated for display"
+  },
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "python": "3.10.20",
+    "torch": "2.13.0+cu130"
+  },
+  "episodes": [
+    {
+      "action_plan_exact_match": true,
+      "cem_rollouts_per_episode": 18000,
+      "compact_trace_decision_0": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
+      "compact_trace_decision_0_sha256": "3cf8ff0e18575fb8d103c109d9226893d5843dbfb072fc230922974551c47ec6",
+      "compact_trace_decision_1": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
+      "compact_trace_decision_1_sha256": "364cf1e3b88af7412a12ea326634f43ebf725242d551d3945bb2da7e5a2ce576",
+      "decision_action_offsets": [
+        0,
+        25
+      ],
+      "decisions": 2,
+      "episode": 3876,
+      "final_block_angle_error_deg": 3.5442036244818738,
+      "final_block_position_error_px": 9.066118705954892,
+      "final_normalized_goal_error": 0.9453707016546092,
+      "final_plan_inferences_per_episode": 2,
+      "first_out_of_bounds_action_index": 0,
+      "model_rollouts_total_per_episode": 18002,
+      "out_of_bounds_at_final_frame": true,
+      "out_of_bounds_components": [
+        5,
+        6
+      ],
+      "out_of_bounds_frames": 42,
+      "out_of_bounds_frames_total": 51,
+      "planning_seconds_episode_estimate": 10.640644033000171,
+      "planning_seconds_per_decision_estimate": [
+        5.371210915500114,
+        5.269433117500057
+      ],
+      "pusher_x_max": 131.61473083496094,
+      "pusher_x_min": 37.045813448429094,
+      "pusher_y_max": 228.11703960180265,
+      "pusher_y_min": 84.77218627929688,
+      "start_step": 16,
+      "success": true,
+      "velocity_x_max": 126.58804321289062,
+      "velocity_x_min": -144.99440002441406,
+      "velocity_y_max": 246.17127990722656,
+      "velocity_y_min": -118.14527893066406
+    },
+    {
+      "action_plan_exact_match": true,
+      "cem_rollouts_per_episode": 18000,
+      "compact_trace_decision_0": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
+      "compact_trace_decision_0_sha256": "ffba81c57fc8e42b2ff29e693dd6c6f2a56c367c744cb23d45594ddcff0cf324",
+      "compact_trace_decision_1": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
+      "compact_trace_decision_1_sha256": "9cece661a107815d33fb0cc267d296464aaeac86cc430a68aa4eae20fb94e640",
+      "decision_action_offsets": [
+        0,
+        25
+      ],
+      "decisions": 2,
+      "episode": 1766,
+      "final_block_angle_error_deg": 4.829506077561323,
+      "final_block_position_error_px": 13.259440436535264,
+      "final_normalized_goal_error": 1.6602914056531013,
+      "final_plan_inferences_per_episode": 2,
+      "first_out_of_bounds_action_index": 0,
+      "model_rollouts_total_per_episode": 18002,
+      "out_of_bounds_at_final_frame": true,
+      "out_of_bounds_components": [
+        5,
+        6
+      ],
+      "out_of_bounds_frames": 40,
+      "out_of_bounds_frames_total": 51,
+      "planning_seconds_episode_estimate": 10.640644033000171,
+      "planning_seconds_per_decision_estimate": [
+        5.371210915500114,
+        5.269433117500057
+      ],
+      "pusher_x_max": 116.36041842460628,
+      "pusher_x_min": 27.267242813110318,
+      "pusher_y_max": 500.3396614646914,
+      "pusher_y_min": 251.01904296875,
+      "start_step": 2,
+      "success": false,
+      "velocity_x_max": 141.70762634277344,
+      "velocity_x_min": -239.19418334960938,
+      "velocity_y_max": 234.77908325195312,
+      "velocity_y_min": -116.93971252441406
+    }
+  ],
+  "limitations": [
+    "The two episodes are communication examples chosen before the run, not a performance sample.",
+    "Physical pred-vs-real errors depend on the structured decoder, a diagnostic that knows PushT geometry; it is not part of the CEM cost.",
+    "Per-episode planning times are estimates because one MPC call covers both environments.",
+    "The gymnasium out-of-declared-bounds warning is measured per episode and reported as a specification inconsistency or a descriptive factor, not a demonstrated cause.",
+    "If the rerun changes an episode outcome, the observed outcome is reported and analysed, never forced."
+  ],
+  "planning": {
+    "mpc_batch_calls": 2,
+    "note": "each MPC call plans for both environments in one vectorized batch; the per-episode estimate divides the call wall time by the number of environments",
+    "planning_seconds_per_batch_call": [
+      10.742421831000229,
+      10.538866235000114
+    ]
+  },
+  "protocol": {
+    "action_block": 5,
+    "budget_actions": 50,
+    "cases": [
+      {
+        "episode": 3876,
+        "start_step": 16
+      },
+      {
+        "episode": 1766,
+        "start_step": 2
+      }
+    ],
+    "checkpoint": "pusht/lewm (official LeWM checkpoint)",
+    "checkpoint_sha256": "a7f1ae0cfbfad8aca613f737d66d12220fa2a8e345c5b46de8b89496c44ced62",
+    "cost": "official LeWM latent cost at +25 actions (goal latent)",
+    "elites": 30,
+    "goal_offset_steps": 25,
+    "horizon_blocks": 5,
+    "iterations": 30,
+    "population": 300,
+    "receding_horizon": 5,
+    "seed": 42,
+    "success_definition": "official PushT success computed by stable-worldmodel evaluate_from_dataset; the demo only reports it"
+  },
+  "provenance": {
+    "checkpoint_sha256": "a7f1ae0cfbfad8aca613f737d66d12220fa2a8e345c5b46de8b89496c44ced62",
+    "evaluation_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+    "evaluation_lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
+    "hardware": "NVIDIA GeForce RTX 3090",
+    "lab_clean": true,
+    "lab_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+    "lewm_clean": true,
+    "lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
+    "postprocessing_commit": "8bae6ce10f8694179212a0c1de268b3759401738",
+    "postprocessing_note": "the evaluation commit is read from the raw execution sidecar recorded by eval.py at run time; the post-processing commit is the HEAD of this repository when the published artifacts were generated. They differ only when a correction was committed after the evaluation run.",
+    "seed": 42
+  },
+  "resolved_config_sanitized": {
+    "cache_dir": null,
+    "dataset": {
+      "keys_to_cache": [
+        "action",
+        "proprio",
+        "state"
+      ],
+      "stats": "pusht_expert_train"
+    },
+    "eval": {
+      "callables": [
+        {
+          "args": {
+            "state": {
+              "value": "state"
+            }
+          },
+          "method": "_set_state"
+        },
+        {
+          "args": {
+            "goal_state": {
+              "value": "goal_state"
+            }
+          },
+          "method": "_set_goal_state"
+        }
+      ],
+      "dataset_name": "pusht_expert_train",
+      "eval_budget": 50,
+      "fixed_episode_ids": [
+        3876,
+        1766
+      ],
+      "fixed_start_steps": [
+        16,
+        2
+      ],
+      "goal_offset_steps": 25,
+      "img_size": 224,
+      "num_eval": 2,
+      "save_video": false
+    },
+    "on_policy_artifact_dir": "$STABLEWM_HOME/pusht/reproducible_cem_demo/raw",
+    "on_policy_artifact_filename": "execution.npz",
+    "on_policy_recording": true,
+    "output": {
+      "filename": "reproducible_cem_demo/cem_demo_results.txt",
+      "metrics_filename": "reproducible_cem_demo/cem_demo_metrics.json"
+    },
+    "phase1_metrics": true,
+    "phase_metrics_label": "On-policy CEM",
+    "plan_config": {
+      "action_block": 5,
+      "horizon": 5,
+      "receding_horizon": 5
+    },
+    "policy": "pusht/lewm",
+    "repeatability_tolerance": {
+      "final_elite_cost_relative": 0.1,
+      "success_rate_percentage_points": 0.0
+    },
+    "seed": 42,
+    "solver": {
+      "_target_": "cem_trace.TracedCEMSolver",
+      "batch_size": 1,
+      "device": "cuda",
+      "model": "???",
+      "n_steps": 30,
+      "num_samples": 300,
+      "seed": 42,
+      "selected_plan_dir": "$STABLEWM_HOME/pusht/reproducible_cem_demo/plans",
+      "selected_plan_enabled": true,
+      "topk": 30,
+      "trace_dir": "$STABLEWM_HOME/pusht/reproducible_cem_demo/traces",
+      "trace_enabled": true,
+      "var_scale": 1.0
+    },
+    "world": {
+      "env_name": "swm/PushT-v1",
+      "max_episode_steps": 100,
+      "num_envs": 2
+    }
+  },
+  "schema_version": 1,
+  "title": "Reproducible end-to-end CEM demo on two PushT episodes"
+}

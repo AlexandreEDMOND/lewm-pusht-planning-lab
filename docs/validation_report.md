@@ -4,15 +4,17 @@ Ce document regroupe les vérifications techniques, les résultats expérimentau
 publiés et leurs principales limites. Le suivi des travaux appartient à la
 [roadmap](../ROADMAP.md).
 
-Date de validation : **30 juillet 2026**.
+Date de validation : **31 juillet 2026**.
 
 ## Provenance
 
 | Élément | Référence |
 | --- | --- |
+| Démonstrateur CEM, évaluation | `8bae6ce10f8694179212a0c1de268b3759401738` |
+| Démonstrateur CEM, post-traitement | `8bae6ce10f8694179212a0c1de268b3759401738` |
+| Instrumentation LeWM | `7246b262be75098f880caacaa7abf8f6c55de22b` |
 | Évaluation on-policy, dépôt principal | `f6b74e7b6f235c1b683bd1af590186aca79626ac` |
 | Post-traitement on-policy | `da86f77e61752588d764ccf1121d9c2e85af79dc` |
-| Instrumentation LeWM | `aac1036b9eb35e7499d381964b1213eb277bb132` |
 | Checkpoint officiel | `a7f1ae0cfbfad8aca613f737d66d12220fa2a8e345c5b46de8b89496c44ced62` |
 | Seed CEM | `42` |
 | Matériel validé | NVIDIA RTX 3090, 24 Go |
@@ -26,12 +28,18 @@ versionnés. Les fichiers lourds restent sous `$STABLEWM_HOME`.
 | Vérification | Résultat | Interprétation |
 | --- | ---: | --- |
 | Python, CUDA, GPU, dataset et checkpoints | Succès | Les dépendances matérielles et les assets attendus sont disponibles |
-| Tests unitaires LeWM | 19/19 | Les contrats temporels, schémas, décodeurs et invariants CEM testés sont respectés |
-| Post-traitement depuis les artefacts bruts | Succès | Les rapports peuvent être reconstruits sans rejouer la simulation |
-| Couverture on-policy | 24/24 dans chaque condition | Les deux contrôleurs utilisent exactement les mêmes couples épisode/départ |
-| Correspondance plan/action | 48/48 exactes | Les métriques portent sur les actions réellement sélectionnées et envoyées |
-| Valeurs numériques | Aucun NaN/Inf | Les CSV publiés ne contiennent pas de mesure non finie |
-| Cohérence Git et Markdown | Succès | Les patches ne contiennent pas d'erreur d'espace blanc et les médias liés existent |
+| Tests unitaires LeWM | 35/35 | Les contrats temporels, schémas, décodeurs, trace compacte et invariants CEM testés sont respectés |
+| Démonstration depuis un clone propre | Succès | `check_phase0`, pytest et la commande de démonstration passent depuis un clone neuf |
+| Épisodes de la démo | 2/2 (3876/16, 1766/2) | Résultats observés : succès puis échec, conformes aux cas connus |
+| Décisions par épisode | 2 (offsets 0 et 25) | Vérifié depuis `decision_index_per_action` de l'exécution brute |
+| Itérations, population, élites | 30, 300, 30 | Vérifié depuis les traces compactes |
+| Correspondance plan/action | 4/4 exactes | Les plans sélectionnés égalent les actions normalisées exécutées à `2e-6` |
+| Valeurs numériques | Aucun NaN/Inf | Les traces compactes (hors bourrage documenté) et le CSV publié sont finis |
+| Taille des traces compactes | 4 × ~2,4 Mo, 9,46 Mo au total | Limites 10 Mo/fichier et 20 Mo au total respectées |
+| SHA-256 des artefacts | Recalculés | Les hashes du manifeste correspondent aux fichiers publiés |
+| Chemins publiés | Portables | Aucun chemin `/home/...` dans les fichiers versionnés |
+| Cohérence Git et Markdown | Succès | `git diff --check` propre, liens Markdown valides, provenance propre |
+| Déterminisme du post-traitement | Vérifié | Deux reruns produisent des fichiers identiques (voir ci-dessous) |
 
 Commande du contrôle matériel :
 
@@ -47,13 +55,46 @@ env PYTHONPATH=third_party/le-wm \
   pytest -q third_party/le-wm/tests
 ```
 
-Les 19 tests se répartissent ainsi :
+Les 35 tests se répartissent ainsi :
 
 - 2 tests sur la trace CEM, le plan final et la non-régression des actions ;
 - 6 tests sur l'alignement on-policy, la fréquence de replanification, les
   branches factuelles, la normalisation et les schémas ;
 - 11 tests sur les splits, indices temporels, blocs d'actions, catégories
-  physiques et sorties des trois décodeurs.
+  physiques et sorties des trois décodeurs ;
+- 16 tests sur la trace compacte de la démo : schéma, sélection déterministe
+  des candidats, conservation des élites, correspondance plan/actions,
+  offsets 0 et 25, alignement actions/observations, rejet d'une couverture
+  incomplète, rejet d'une provenance dirty, portabilité, hashes, non-écrasement
+  des expériences on-policy et déterminisme du post-traitement.
+
+## Démonstrateur CEM reproductible
+
+La [démonstration](cem_reproducible_demo.md) a été exécutée depuis un clone
+propre avec le protocole officiel. Résultats observés : épisode 3876 (départ
+16) **réussi**, épisode 1766 (départ 2) **échoué**, conformes aux cas connus
+sélectionnés à l'avance.
+
+| Épisode | Départ | Succès | Erreur T finale | Erreur normalisée | Décisions | Offsets | Plan = actions |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 3876 | 16 | Oui | 9,07 px · 3,54° | 0,945 | 2 | 0, 25 | 2/2 |
+| 1766 | 2 | Non | 13,26 px · 4,83° | 1,660 | 2 | 0, 25 | 2/2 |
+
+Planification : 10,74 s et 10,54 s par appel MPC batch (deux environnements),
+soit ≈ 5,37 s par décision et par épisode (estimation). Le rerun propre a
+reproduit les issues ; les plans diffèrent au niveau du bit de l'étude
+précédente (réductions GPU non déterministes entre compositions de batch),
+sans changement d'issue.
+
+L'avertissement Gymnasium est mesuré par épisode : les composantes de vitesse
+(5–6 de l'état) sortent de l'espace déclaré `[0, 512]` dès l'action 0 dans les
+deux épisodes (42/51 et 40/51 frames) ; l'épisode réussi y est aussi soumis.
+Incohérence de spécification, facteur descriptif, pas cause démontrée.
+
+Deux reruns du seul post-traitement produisent des fichiers identiques :
+CSV, JSON (sidecars et manifeste), PNG, GIF et traces compactes ont les mêmes
+SHA-256, le manifeste compris (les temps de planification sont relus depuis
+l'exécution brute et ne sont pas remesurés).
 
 ## Décodage du latent
 
@@ -157,6 +198,10 @@ incohérence peut contribuer à certains échecs, mais ne les explique pas tous.
 
 ## Artefacts vérifiables
 
+- [Démonstrateur CEM — manifeste](results/cem_demo_manifest.json)
+- [Démonstrateur CEM — métriques par épisode](results/cem_demo_episode_metrics.csv)
+- [Démonstrateur CEM — traces compactes](results/cem_demo_compact/)
+- [Démonstrateur CEM — animations](assets/cem_demo_success.gif) · [échec](assets/cem_demo_failure.gif) · [synthèse](assets/cem_demo_overview.png)
 - [Résultats on-policy JSON](results/on_policy_cem_results.json)
 - [Métriques on-policy par épisode](results/on_policy_cem_episode_metrics.csv)
 - [Métriques on-policy par frame](results/on_policy_cem_frame_metrics.csv)

@@ -4,8 +4,11 @@ Cette roadmap sépare ce qui est **implémenté**, ce qui est **validé par un
 artefact publiable** et ce qui reste à faire. Une fonctionnalité locale n'est
 donc pas automatiquement considérée comme terminée.
 
-Dernière validation : **30 juillet 2026**. Résultats et vérifications :
-[docs/validation_report.md](docs/validation_report.md).
+Dernière validation : **31 juillet 2026**. Résultats et vérifications :
+[docs/validation_report.md](docs/validation_report.md). Le
+[démonstrateur CEM reproductible](docs/cem_reproducible_demo.md) relie la
+recherche CEM, les plans, les actions exécutées, les futurs prédits, la
+trajectoire réelle et le résultat final sur deux épisodes fixes.
 L'[audit initial](docs/project_audit_2026-07-30.md) reste disponible comme
 photographie historique du dépôt avant l'étude on-policy.
 
@@ -14,12 +17,13 @@ photographie historique du dépôt avant l'étude on-policy.
 | Jalon | État | Preuve actuelle | Prochaine sortie |
 | --- | --- | --- | --- |
 | Phase 0 — bootstrap | À auditer proprement | Contrôle complet réussi sur la machine actuelle | Installation depuis un clone neuf, hashes et manifeste d'environnement |
-| Phase 1 — référence CEM | Implémentée, préliminaire | 5/5 succès locaux sur épisodes fixes | Répétition propre et évaluation représentative |
-| Phase 2 — instrumentation | Presque complète | Traces locales et test de non-régression | Temps par itération, provenance propre et trace compacte publiée |
-| Phase 3 — visualisation | Partielle | MP4 local et aperçu PNG versionné | Trajectoire exécutée complète et animation publique |
+| Phase 1 — référence CEM | Reproductible sur cas fixes | Démo end-to-end (épisodes 3876/16 et 1766/2) depuis un clone propre | Évaluation représentative |
+| Phase 2 — instrumentation | Terminée | Traces compactes versionnées, provenance propre, hashes et schéma v1 | Temps par itération individuelle |
+| Phase 3 — visualisation | Terminée pour la démo | GIFs de trajectoire complète exécutée, plan, coût et prédit/réel publiés | Animation de toute évaluation future |
 | Phase 3 bis — décodeurs | Validée | Rapport, figures et GIFs versionnés | Maintenir ; ne plus optimiser sans besoin de contrôle |
 | Généralisation offline | Validée | 128 épisodes, CSV/JSON et cas extrêmes versionnés | Aucun blocage pour ce sous-jalon |
 | Erreur on-policy | Validée, stratifiée | RH=5/RH=1, artefacts et GIFs | Examiner coût latent/solveur |
+| Démo CEM reproductible | Validée | Deux épisodes, manifeste, animations, 35 tests, clone propre | Aucun blocage pour ce jalon |
 | Phase 4 — entraînement local | Smoke test seulement | Deux batches locaux et configuration 100 époques | Run complet avec et sans SIGReg |
 | Phase 5 — baselines | Non commencée | Protocole prévu | CEM vs random shooting à budget égal |
 | Phase 6 — probes | Partielle | Décodeur d'état non linéaire | Probes linéaires et comparaison de checkpoints |
@@ -95,11 +99,11 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 
 ### Niveau A — démonstrateur reproductible
 
-- [ ] Un clone neuf passe l'installation, le contrôle phase 0 et les 19 tests.
-- [ ] Une commande courte reproduit une évaluation CEM et son résultat structuré.
-- [ ] Une métrique de référence, une trace compacte et une animation de planning
+- [x] Un clone neuf passe l'installation, le contrôle phase 0 et les 35 tests.
+- [x] Une commande courte reproduit une évaluation CEM et son résultat structuré.
+- [x] Une métrique de référence, une trace compacte et une animation de planning
   sont téléchargeables avec leurs hashes.
-- [ ] L'animation relie la recherche CEM à toute la trajectoire exécutée.
+- [x] L'animation relie la recherche CEM à toute la trajectoire exécutée.
 - [x] Le README présente PushT, LeWM, CEM et les visualisations avec une
   animation intégrée.
 - [ ] Le dépôt racine possède une licence ; code, dataset et checkpoints ont une
@@ -178,8 +182,9 @@ insuffisant pour estimer la performance générale.**
 
 **But :** faire du CEM un objet d'étude plutôt qu'un appel opaque au solveur existant.
 
-**État : format de trace, latents, élites et tests unitaires implémentés ; le
-temps individuel de chaque itération et un exemple publiable manquent.**
+**État : format de trace, latents, élites, tests unitaires et trace compacte
+publiée avec provenance propre ; le temps individuel de chaque itération
+reste à enregistrer.**
 
 - [x] Définir un format de trace par décision MPC et itération CEM.
 - [x] Enregistrer les séquences candidates, coûts, indices des élites, moyenne et écart-type.
@@ -187,7 +192,7 @@ temps individuel de chaque itération et un exemple publiable manquent.**
 - [x] Enregistrer les latents des rollouts et le latent objectif nécessaires à l'analyse.
 - [x] Vérifier que l'instrumentation ne change pas les actions ni le résultat du CEM de référence.
 - [x] Tester la sélection des élites, la mise à jour moyenne/écart-type et les bornes des actions retournées.
-- [ ] Publier une trace compacte avec provenance propre, hash et description du schéma.
+- [x] Publier une trace compacte avec provenance propre, hash et description du schéma (schéma v1, docs/results/cem_demo_compact/).
 
 **Sortie vérifiable :** pour une décision donnée, une trace permet de reconstruire l'évolution de `μ`, `σ`, les élites et le meilleur coût à chaque itération.
 
@@ -195,17 +200,18 @@ temps individuel de chaque itération et un exemple publiable manquent.**
 
 **But :** produire une visualisation claire, exportable et fidèle aux traces CEM.
 
-**État : générateur et vidéos disponibles localement. Le panneau réel montre la
-frame exacte de la décision ; l'affichage de toute la trajectoire exécutée et la
-publication d'une animation restent à faire.**
+**État : générateur et vidéos disponibles localement. Les GIFs publiés
+affichent toute la trajectoire exécutée, les replanifications aux actions 0
+et 25, le plan sélectionné, la convergence du coût et le prédit/réel
+factuel.**
 
-- [ ] Afficher l'environnement réel et toute la trajectoire exécutée.
+- [x] Afficher l'environnement réel et toute la trajectoire exécutée.
 - [x] Afficher la frame exacte à laquelle la décision tracée est prise.
 - [x] Afficher la population d'actions et distinguer candidats, élites et moyenne.
 - [x] Afficher les coûts et la contraction de la dispersion au fil des itérations.
 - [x] Afficher les rollouts latents sans prétendre qu'une projection 2D est une preuve physique.
 - [x] Exporter une vidéo et son métadonnée JSON à partir d'une trace sauvegardée.
-- [ ] Publier une animation légère, légendée et reliée aux métriques sources.
+- [x] Publier une animation légère, légendée et reliée aux métriques sources (GIFs de la démo, convention de 57 frames documentée dans docs/cem_reproducible_demo.md).
 
 **Sortie vérifiable :** une vidéo montre, pour un épisode, la population initialement dispersée, la sélection des élites et la concentration de la distribution jusqu'à l'action exécutée. Les chiffres affichés correspondent aux traces brutes.
 
@@ -348,8 +354,8 @@ fine-tuning sur A100, pas une garantie de protocole utile sur RTX 3090.
 - [ ] Installation et reproduction validées depuis un clone propre.
 - [ ] Checkpoints ou instructions de téléchargement, avec licence, provenance et hashes.
 - [x] Générateur local de vidéo de visualisation CEM.
-- [ ] Animation CEM publiée montrant aussi la trajectoire exécutée.
-- [ ] Trace de planning compacte, documentée et réutilisable sans relancer l'environnement.
+- [x] Animation CEM publiée montrant aussi la trajectoire exécutée.
+- [x] Trace de planning compacte, documentée et réutilisable sans relancer l'environnement.
 - [x] GIFs réel/prédit, protocole de reconstruction et métriques versionnés.
 - [ ] Checkpoints des décodeurs publiés ou reconstruits par une procédure auditée.
 - [ ] Résultats représentatifs du checkpoint officiel et du checkpoint local.

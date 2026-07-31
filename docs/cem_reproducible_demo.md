@@ -178,12 +178,18 @@ répertoires on-policy existants.
 | Élément | Valeur |
 | --- | --- |
 | Commit d'évaluation | `8bae6ce10f8694179212a0c1de268b3759401738` |
-| Commit de post-traitement | `8bae6ce10f8694179212a0c1de268b3759401738` |
+| Commit de post-traitement | `9fcac93f9990ebc704863e92c0a628b23e3e12ef` |
 | Sous-module LeWM | `7246b262be75098f880caacaa7abf8f6c55de22b` |
 | Checkpoint | `a7f1ae0cfbfad8aca613f737d66d12220fa2a8e345c5b46de8b89496c44ced62` |
 | Seed | `42` |
 | Matériel | NVIDIA GeForce RTX 3090, CUDA 13.0, PyTorch 2.13.0, Python 3.10.20 |
 | Temps de planification | 10,74 s et 10,54 s par appel MPC batch (2 environnements) ; ≈ 5,37 s / 5,27 s par épisode-décision |
+
+L'évaluation et le post-traitement ont initialement tourné depuis le même
+commit (`8bae6ce`) ; des corrections de post-traitement (déterminisme
+bit-à-bit, provenance des sidecars) ont ensuite été committées séparément et
+la régénération finale a été produite au commit `9fcac93`, lui-même
+vérifié par deux reruns identiques.
 
 ## Trace compacte (schéma v1)
 

@@ -11,7 +11,7 @@ Date de validation : **31 juillet 2026**.
 | Élément | Référence |
 | --- | --- |
 | Démonstrateur CEM, évaluation | `8bae6ce10f8694179212a0c1de268b3759401738` |
-| Démonstrateur CEM, post-traitement | `8bae6ce10f8694179212a0c1de268b3759401738` |
+| Démonstrateur CEM, post-traitement (régénération finale) | `9fcac93f9990ebc704863e92c0a628b23e3e12ef` |
 | Instrumentation LeWM | `7246b262be75098f880caacaa7abf8f6c55de22b` |
 | Évaluation on-policy, dépôt principal | `f6b74e7b6f235c1b683bd1af590186aca79626ac` |
 | Post-traitement on-policy | `da86f77e61752588d764ccf1121d9c2e85af79dc` |

@@ -155,8 +155,14 @@ def compute_latent_errors(
             real = encode_images(real_frames, model, device).cpu().numpy()
             real_latents[decision] = real
             predicted = plans[decision]["predicted_emb"][environment][1:]
-            predicted_states = decode_state(decoder(torch.from_numpy(predicted[None]).to(device)))[0].cpu().numpy()
-            real_states = decode_state(decoder(torch.from_numpy(real[1:][None]).to(device)))[0].cpu().numpy()
+            real = encode_images(real_frames, model, device).cpu().numpy()
+            real_latents[decision] = real
+            predicted_states = decode_state(
+                decoder(torch.from_numpy(predicted).to(device))
+            ).cpu().numpy()
+            real_states = decode_state(
+                decoder(torch.from_numpy(real[1:]).to(device))
+            ).cpu().numpy()
             block_latent_mse = []
             block_position_error = []
             block_angle_error = []
@@ -295,8 +301,8 @@ def build_episode_records(
             trace_paths.append(str(relative))
             trace_hashes.append(compact_files[-1]["sha256"])
             plan_poses = decode_state(
-                torch.from_numpy(plans[decision]["predicted_emb"][environment][1:][None])
-            )[0].numpy()[:, [2, 3, 4]]
+                torch.from_numpy(plans[decision]["predicted_emb"][environment][1:])
+            ).numpy()[:, [2, 3, 4]]
             plan_actions = plans[decision]["normalized_actions"][environment].mean(axis=1)
             decisions_render.append(
                 DecisionRender(
@@ -457,12 +463,15 @@ def write_manifest(
             "lewm_commit": provenance["lewm_commit"],
             "lab_clean": provenance["lab_clean"],
             "lewm_clean": provenance["lewm_clean"],
-            "evaluation_commit": provenance["lab_commit"],
+            "evaluation_commit": metadata["code_versions"]["lab"],
+            "evaluation_lewm_commit": metadata["code_versions"]["lewm"],
             "postprocessing_commit": provenance["lab_commit"],
-            "same_commit_note": (
-                "evaluation and post-processing ran from the same clean commit; "
-                "if a correction is required after the run, the new commit will "
-                "be recorded as a separate post-processing commit"
+            "postprocessing_note": (
+                "the evaluation commit is read from the raw execution sidecar "
+                "recorded by eval.py at run time; the post-processing commit is "
+                "the HEAD of this repository when the published artifacts were "
+                "generated. They differ only when a correction was committed "
+                "after the evaluation run."
             ),
             "seed": 42,
             "hardware": environment_snapshot["gpu"],

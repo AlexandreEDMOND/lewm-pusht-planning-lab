@@ -74,11 +74,12 @@ from cem_demo_video import (  # noqa: E402
 from on_policy import (  # noqa: E402
     EXECUTION_SCHEMA_VERSION,
     SELECTED_PLAN_SCHEMA_VERSION,
+    circular_error_radians,
     read_versioned_npz,
 )
 from cem_trace import TRACE_SCHEMA_VERSION  # noqa: E402
 from evaluate_decoder_rollouts import load_models  # noqa: E402
-from train_structured_decoder import circular_error, decode_state  # noqa: E402
+from train_structured_decoder import decode_state  # noqa: E402
 from train_visual_decoder import encode_images, seed_everything  # noqa: E402
 
 
@@ -176,13 +177,13 @@ def compute_latent_errors(
                     float(np.linalg.norm(predicted_states[block, 2:4] - target[2:4]))
                 )
                 block_angle_error.append(
-                    float(np.degrees(circular_error(predicted_states[block, 4], target[4])))
+                    float(np.degrees(circular_error_radians(predicted_states[block, 4], target[4])))
                 )
                 decoder_ceiling_position.append(
                     float(np.linalg.norm(real_states[block, 2:4] - target[2:4]))
                 )
                 decoder_ceiling_angle.append(
-                    float(np.degrees(circular_error(real_states[block, 4], target[4])))
+                    float(np.degrees(circular_error_radians(real_states[block, 4], target[4])))
                 )
             metrics[decision] = {
                 "factual_blocks": list(range(1, HORIZON + 1)),

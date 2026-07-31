@@ -551,7 +551,10 @@ def main() -> None:
     raw_root = args.raw_root or stable_home / "pusht" / DEMO_DIR_NAME
     environment_snapshot = record_environment()
     seed_everything(42)
-    torch.use_deterministic_algorithms(True, warn_only=True)
+    # seed_everything enables cuDNN autotuning, which can pick different
+    # kernels across processes and make the latent encoding non-bit-reproducible.
+    torch.backends.cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True)
 
     arrays, metadata = load_demo_inputs(raw_root)
     verify_protocol(arrays, metadata, args.lab_root, args.lewm_root)

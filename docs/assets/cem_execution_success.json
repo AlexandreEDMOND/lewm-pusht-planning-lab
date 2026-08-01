@@ -1,0 +1,15 @@
+{
+  "actions_executed": 50,
+  "decision_action_offsets": [
+    0,
+    25
+  ],
+  "episode": 3876,
+  "frame_semantics": "each GIF image is the factual PushT observation after t executed CEM actions",
+  "path_semantics": "blue pusher and orange T paths are simulator states; no predicted or decoded state is drawn",
+  "schema_version": 1,
+  "source_execution": "$STABLEWM_HOME/pusht/reproducible_cem_demo/raw/execution.npz",
+  "source_execution_sha256": "de9209cc117814d6e79cab8c2738f8bcd7718a6dafd30ce99ef0ea71607df9d9",
+  "start_step": 16,
+  "success": true
+}

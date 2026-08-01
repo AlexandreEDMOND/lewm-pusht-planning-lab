@@ -41,6 +41,23 @@ prédites, soit cinq blocs de cinq actions. La couleur continue va de **jaune**
 simulateur. À l'itération 1 les candidats sont aléatoires ; aux suivantes ils
 sont tirés de la distribution CEM mise à jour.*
 
+### Exécuter le plan choisi dans PushT
+
+![Exécution réelle : les 50 actions choisies par CEM sont envoyées à PushT ; le trajet bleu est le pousseur et le trajet orange est le T réellement déplacé.](docs/assets/cem_execution_success.gif)
+
+Cette animation ne montre plus les 300 hypothèses : elle montre **le seul plan
+retenu**, réellement exécuté dans le simulateur depuis l'image initiale. Le
+pousseur bleu se déplace, contacte le T et le T suit la courbe orange. À
+l'action 25, CEM reçoit la nouvelle image réelle, calcule un second plan, puis
+PushT exécute les actions 25 à 49. Cet épisode atteint la cible. Les courbes
+sont des états du simulateur, pas des prédictions du world model.
+
+Pour régénérer ce GIF depuis les actions et observations enregistrées :
+
+```bash
+bash scripts/render_cem_execution.sh
+```
+
 Pour régénérer ces deux GIFs depuis les traces complètes de la démo :
 
 ```bash

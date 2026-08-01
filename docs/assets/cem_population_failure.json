@@ -1,0 +1,20 @@
+{
+  "cost": "recorded CEM terminal latent distance to the goal embedding",
+  "decision": 0,
+  "decision_action_offset": 0,
+  "elite_count": 30,
+  "environment": 0,
+  "episode": 1766,
+  "execution_schema": 1,
+  "iterations": 30,
+  "population": 300,
+  "schema_version": 1,
+  "source_execution": "raw/execution.npz",
+  "source_execution_sha256": "de9209cc117814d6e79cab8c2738f8bcd7718a6dafd30ce99ef0ea71607df9d9",
+  "source_trace": "traces/decision_0000.npz",
+  "source_trace_sha256": "f681ed10d0ca4705fe7271fec626514dee57caa9ca449560ebef8192652afbbf",
+  "start_step": 2,
+  "structured_decoder_sha256": "9c42f2a3ac77e73286a22dfc47b225ee8a0156805b99a725d27d7144ee608f95",
+  "trace_schema": 1,
+  "trajectory_semantics": "predicted latent rollouts decoded by the structured PushT diagnostic; discarded candidates are never simulated"
+}

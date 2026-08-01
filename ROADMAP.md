@@ -28,7 +28,7 @@ photographie historique du dépôt avant l'étude on-policy.
 | Phase 5 — baselines | Non commencée | Protocole prévu | CEM vs random shooting à budget égal |
 | Phase 6 — probes | Partielle | Décodeur d'état non linéaire | Probes linéaires et comparaison de checkpoints |
 | Phase 7 — OOD | Non commencée | Intention | Protocoles visuel et physique |
-| Phase 8 — VLA | Extension | Étude de cadrage | À isoler de la version 1 |
+| Phase 8 — VLA | Requis pour la comparaison finale, non commencé | Protocole équitable versionné | Fine-tuning puis évaluation sur les mêmes épisodes que LeWM+CEM |
 
 Les cases ci-dessous signifient :
 
@@ -122,6 +122,8 @@ l'utiliser pour planifier ». Il exige le niveau A, plus :
 - [ ] Ablation sans SIGReg et diagnostic du collapse par plusieurs indicateurs.
 - [ ] Comparaison checkpoint officiel / checkpoint local sur les mêmes épisodes.
 - [ ] Comparaison CEM / random shooting à budget total de rollouts égal.
+- [ ] Comparaison LeWM+CEM / VLA à informations visuelles, objectifs et budget
+  d'actions égaux ; ne conclure qu'après une évaluation publiée.
 - [ ] Balayages annoncés exécutés, ou périmètre réduit explicitement avant
   l'analyse.
 - [ ] Release regroupant résultats bruts, configurations, hashes, figures,

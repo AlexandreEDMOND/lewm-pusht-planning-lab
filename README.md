@@ -47,16 +47,17 @@ Les mêmes GIFs sont publiés pour trois autres positions initiales :
 
 ### CEM : 300 trajectoires imaginées, 30 élites
 
-![CEM, cas réussi : les 300 trajectoires prédites du T sont colorées par coût latent ; les 30 élites sont orange et la meilleure est rouge.](docs/assets/cem_population_success.gif)
+![CEM, cas réussi : les 300 trajectoires prédites du pousseur bleu sont colorées par coût latent ; les 30 élites sont orange et la meilleure est rouge.](docs/assets/cem_population_success.gif)
 
-*Chaque trait est un futur du **T** imaginé par LeWM puis décodé en pose
-PushT : il contient cinq points, soit cinq blocs de cinq actions. Jaune signifie
+*Chaque trait part exactement de la boule bleue — le pousseur — puis suit son
+futur imaginé par LeWM et décodé en pose PushT. Il contient cinq positions
+prédites, soit cinq blocs de cinq actions. Jaune signifie
 un coût latent faible ; orange signifie « fait partie des 30 élites » ; rouge
 signifie meilleure élite. Seul le plan final est réellement envoyé au
 simulateur. À l'itération 1 les candidats sont aléatoires ; aux suivantes ils
 sont tirés de la distribution CEM mise à jour.*
 
-![CEM, cas échoué : même recherche CEM et mêmes 300 trajectoires prédites, mais le plan final ne produit pas le succès dans le simulateur.](docs/assets/cem_population_failure.gif)
+![CEM, cas échoué : même recherche CEM et mêmes 300 trajectoires prédites du pousseur, mais le plan final ne produit pas le succès dans le simulateur.](docs/assets/cem_population_failure.gif)
 
 *Ce second GIF évite une lecture trompeuse : une population peut converger vers
 un coût latent faible tout en conduisant à un échec physique. Les lignes sont
@@ -134,7 +135,7 @@ vidéos que LeWM+CEM.
 | --- | --- | --- |
 | Schéma LeWM+CEM | La circulation images → embeddings → actions → futurs et le tri CEM 300 → 30. | Le décodeur explique les latents ; CEM optimise une distance latente. |
 | GIF rollout 18 pas (4 départs) | Même séquence d'actions dans le réel et dans le rollout autorégressif. | Le modèle suit souvent la scène à court terme mais dérive avec l'horizon. |
-| GIFs population CEM | 300 futurs du T prédits à chaque itération ; 30 élites en orange. | La recherche se concentre, mais les branches sont des prédictions et non des essais réels. |
+| GIFs population CEM | 300 futurs du pousseur bleu prédits à chaque itération ; 30 élites en orange. | La recherche se concentre, mais les branches sont des prédictions et non des essais réels. |
 | Synthèse CEM succès/échec | Deux contrôles complets avec leurs coûts et états finaux. | Un coût latent faible n'est pas une preuve suffisante de succès physique. |
 | Erreur par horizon | Écart latent et physique à plusieurs horizons. | L'erreur longue portée croît et doit être suivie pendant le planning. |
 | Erreur vs résultat | Cas réussis/échoués de l'étude on-policy. | L'erreur seule ne rend pas compte de tous les échecs, en particulier RH=1. |

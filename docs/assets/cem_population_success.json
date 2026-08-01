@@ -16,5 +16,5 @@
   "start_step": 16,
   "structured_decoder_sha256": "9c42f2a3ac77e73286a22dfc47b225ee8a0156805b99a725d27d7144ee608f95",
   "trace_schema": 1,
-  "trajectory_semantics": "predicted latent rollouts decoded by the structured PushT diagnostic; discarded candidates are never simulated"
+  "trajectory_semantics": "pusher paths start at the exact factual blue-pusher position then use latent rollouts decoded by the structured PushT diagnostic; discarded candidates are never simulated"
 }

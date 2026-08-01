@@ -121,13 +121,13 @@ def cost_normalizer(costs: np.ndarray) -> colors.Normalize:
     return colors.Normalize(vmin=float(lower), vmax=float(upper), clip=True)
 
 
-def decode_candidate_poses(
+def decode_candidate_states(
     decoder: StructuredStateDecoder,
     latents: np.ndarray,
     device: torch.device,
     batch_size: int,
 ) -> np.ndarray:
-    """Decode (candidate, latent time, latent dim) into PushT T poses."""
+    """Decode (candidate, latent time, latent dim) into full PushT states."""
     if latents.ndim != 3:
         raise ValueError(f"Expected (candidate,time,latent), got {latents.shape}")
     candidate_count, time_count, latent_dim = latents.shape
@@ -136,8 +136,8 @@ def decode_candidate_poses(
     with torch.inference_mode():
         for start in range(0, len(flattened), batch_size):
             states = decode_state(decoder(flattened[start : start + batch_size]))
-            chunks.append(states[:, 2:5].cpu())
-    return torch.cat(chunks).numpy().reshape(candidate_count, time_count, 3)
+            chunks.append(states.cpu())
+    return torch.cat(chunks).numpy().reshape(candidate_count, time_count, 7)
 
 
 def load_goal_state(dataset: Path, episode: int, start_step: int, offset: int) -> np.ndarray:
@@ -170,7 +170,7 @@ def draw_population_frame(
     image: np.ndarray,
     start_state: np.ndarray,
     goal_state: np.ndarray,
-    poses: np.ndarray,
+    predicted_states: np.ndarray,
     costs: np.ndarray,
     elite_indices: np.ndarray,
     history_costs: np.ndarray,
@@ -189,14 +189,17 @@ def draw_population_frame(
     ax_scene.set_ylim(FRAME_SIZE, -1)
     ax_scene.set_xticks([])
     ax_scene.set_yticks([])
-    ax_scene.set_title("Départ réel, objectif CEM et futurs prédits du T", fontsize=10)
+    ax_scene.set_title("Départ réel, objectif CEM et trajectoires prédites du pousseur", fontsize=10)
     add_t(ax_scene, start_state[2:5], "#111827", 1.8)
     add_t(ax_scene, goal_state[2:5], "#16a34a", 1.8, dashed=True)
     ax_scene.add_patch(
         Circle(tuple(start_state[:2] * SCALE), 15.0 * SCALE, fill=False, edgecolor="#1d4ed8", linewidth=1.5, zorder=6)
     )
 
-    points = poses[:, 1:, :2] * SCALE
+    # Every displayed trajectory begins at the exact factual blue-pusher
+    # position.  Subsequent points are decoded from the candidate latents.
+    start_points = np.broadcast_to(start_state[None, None, :2], (len(predicted_states), 1, 2))
+    points = np.concatenate((start_points, predicted_states[:, 1:, :2]), axis=1) * SCALE
     for index, path in enumerate(points):
         ax_scene.plot(path[:, 0], path[:, 1], color=cmap(normalizer(costs[index])), alpha=0.31, linewidth=0.55, zorder=2)
     for index in elite_indices:
@@ -206,8 +209,8 @@ def draw_population_frame(
     ax_scene.plot(points[best, :, 0], points[best, :, 1], color="#dc2626", linewidth=1.9, zorder=5)
     ax_scene.text(
         4, 14,
-        "noir : T réel au départ · vert pointillé : objectif CEM\n"
-        "couleur : coût latent (jaune = faible) · orange : 30 élites · rouge : meilleure élite",
+        "bleu : pousseur réel au départ · noir : T réel · vert pointillé : objectif CEM\n"
+        "trajectoires du pousseur : jaune = coût faible · orange : 30 élites · rouge : meilleure élite",
         fontsize=7.4, color="#111827", va="top", bbox={"facecolor": "white", "alpha": 0.78, "edgecolor": "none"}, zorder=8,
     )
 
@@ -224,7 +227,7 @@ def draw_population_frame(
     ax_help.text(
         0.02, 0.93,
         f"Itération {iteration + 1}/{history_costs.shape[0]} — {phase}.\n\n"
-        "Chaque courbe contient cinq poses prédites, une par bloc de cinq actions (25 actions au total).\n\n"
+        "Chaque courbe part du pousseur bleu réel et contient cinq positions prédites, une par bloc de cinq actions (25 actions au total).\n\n"
         "Les 300 branches ne sont pas exécutées dans le simulateur : elles sont imaginées par LeWM puis décodées pour être lisibles.",
         va="top", fontsize=9, wrap=True,
     )
@@ -257,10 +260,10 @@ def render(args: argparse.Namespace) -> dict:
     decoder = StructuredStateDecoder().to(device)
     decoder.load_state_dict(saved["state_dict"])
     decoder.eval().requires_grad_(False)
-    all_poses = []
+    all_states = []
     for iteration in range(iterations):
-        all_poses.append(
-            decode_candidate_poses(decoder, trace["predicted_emb"][iteration, args.environment], device, args.batch_size)
+        all_states.append(
+            decode_candidate_states(decoder, trace["predicted_emb"][iteration, args.environment], device, args.batch_size)
         )
     costs = trace["costs"][:, args.environment]
     elites = trace["elite_indices"][:, args.environment]
@@ -271,7 +274,7 @@ def render(args: argparse.Namespace) -> dict:
         draw_population_frame(
             execution["observations"][args.environment, offset],
             execution["states"][args.environment, offset], goal_state,
-            all_poses[iteration], costs[iteration], elites[iteration], costs,
+            all_states[iteration], costs[iteration], elites[iteration], costs,
             iteration, normalizer, cmap,
         )
         for iteration in range(iterations)
@@ -287,7 +290,7 @@ def render(args: argparse.Namespace) -> dict:
         "population": population,
         "elite_count": elite_count,
         "iterations": iterations,
-        "trajectory_semantics": "predicted latent rollouts decoded by the structured PushT diagnostic; discarded candidates are never simulated",
+        "trajectory_semantics": "pusher paths start at the exact factual blue-pusher position then use latent rollouts decoded by the structured PushT diagnostic; discarded candidates are never simulated",
         "cost": "recorded CEM terminal latent distance to the goal embedding",
         "source_trace": f"traces/decision_{args.decision:04d}.npz",
         "source_execution": "raw/execution.npz",

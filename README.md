@@ -29,39 +29,17 @@ d'actions plus concentrée.*
 
 ## Voir le modèle raisonner
 
-### 18 pas du world model : réel vs prédit
-
-![Épisode PushT 4475 : image réelle, reconstruction depuis le latent réel, rollout autorégressif décodé et rendu structuré, sur 18 transitions du modèle.](docs/assets/visual_decoder_rollout_04475.gif)
-
-*Ce GIF répond à la question « le world model imagine-t-il la même suite que le
-simulateur ? ». À partir des mêmes images initiales et actions enregistrées, il
-compare le réel à la prédiction autorégressive. Le modèle actuel travaille par
-blocs de cinq actions : **18 pas du modèle = 90 actions PushT**, et non 18
-actions élémentaires. Les trois premières images sont le contexte ; les
-suivantes sont prédites.*
-
-Les mêmes GIFs sont publiés pour trois autres positions initiales :
-[épisode 6834](docs/assets/visual_decoder_rollout_06834.gif),
-[épisode 8904](docs/assets/visual_decoder_rollout_08904.gif) et
-[épisode 16201](docs/assets/visual_decoder_rollout_16201.gif).
-
 ### CEM : 300 trajectoires imaginées, 30 élites
 
-![CEM, cas réussi : les 300 trajectoires prédites du pousseur bleu sont colorées par coût latent ; les 30 élites sont orange et la meilleure est rouge.](docs/assets/cem_population_success.gif)
+![CEM, cas réussi : les 300 trajectoires prédites du pousseur bleu sont colorées du jaune au bleu/violet par coût latent ; les 30 élites sont orange et la meilleure est noire.](docs/assets/cem_population_success.gif)
 
 *Chaque trait part exactement de la boule bleue — le pousseur — puis suit son
 futur imaginé par LeWM et décodé en pose PushT. Il contient cinq positions
-prédites, soit cinq blocs de cinq actions. Jaune signifie
-un coût latent faible ; orange signifie « fait partie des 30 élites » ; rouge
-signifie meilleure élite. Seul le plan final est réellement envoyé au
+prédites, soit cinq blocs de cinq actions. La couleur continue va de **jaune**
+(coût faible) à **bleu/violet** (coût élevé) ; orange signifie « fait partie des
+30 élites » ; noir signifie meilleure élite. Seul le plan final est envoyé au
 simulateur. À l'itération 1 les candidats sont aléatoires ; aux suivantes ils
 sont tirés de la distribution CEM mise à jour.*
-
-![CEM, cas échoué : même recherche CEM et mêmes 300 trajectoires prédites du pousseur, mais le plan final ne produit pas le succès dans le simulateur.](docs/assets/cem_population_failure.gif)
-
-*Ce second GIF évite une lecture trompeuse : une population peut converger vers
-un coût latent faible tout en conduisant à un échec physique. Les lignes sont
-des prédictions du modèle, non 300 essais réels de PushT.*
 
 Pour régénérer ces deux GIFs depuis les traces complètes de la démo :
 
@@ -69,76 +47,34 @@ Pour régénérer ces deux GIFs depuis les traces complètes de la démo :
 bash scripts/render_cem_population.sh
 ```
 
-### Démonstrateur reproductible de bout en bout
+### 18 pas du world model : réel vs prédit
 
-Une commande unique relie, sur deux épisodes PushT fixes, la recherche CEM
-(population, élites, convergence), les plans sélectionnés, les actions
-réellement exécutées, les futurs prédits par LeWM, la trajectoire obtenue et le
-résultat final — avec provenance propre, traces compactes versionnées et
-hashes.
+![Épisode PushT 4475 : image réelle, reconstruction depuis le latent réel, rollout autorégressif décodé et rendu structuré, sur 18 transitions du modèle.](docs/assets/visual_decoder_rollout_04475.gif)
 
-![Synthèse de la démonstration : état final annoté et convergence CEM des deux décisions pour les épisodes 3876 (succès) et 1766 (échec).](docs/assets/cem_demo_overview.png)
+*Ce GIF répond à la première question : « le world model imagine-t-il une suite
+semblable à celle du simulateur ? ». Les trois premières images, marquées
+**contexte**, sont les images réelles données à LeWM aux temps `t=0`, `t=5` et
+`t=10`. Les suivantes, marquées **prédit**, sont imaginées en chaîne par le
+modèle à partir des actions enregistrées.*
 
-*Cette image compare le résultat réel final des deux épisodes fixes. En haut,
-le planificateur réussit ; en bas, il échoue. Les courbes à droite montrent que
-le coût latent peut diminuer dans les deux cas : il ne garantit donc pas à lui
-seul le succès dans le simulateur.*
+Les quatre panneaux sont, de gauche à droite : le **réel** ; le décodage d'un
+**latent réel** (la limite du décodeur) ; l'**image imaginée** par le rollout ;
+et le même rollout rendu en **poses PushT** pour rendre les écarts lisibles.
+Le modèle actuel travaille par blocs de cinq actions : **18 pas du modèle = 90
+actions PushT**, et non 18 actions élémentaires.
 
-```bash
-bash scripts/run_reproducible_cem_demo.sh
-```
+Les mêmes GIFs sont publiés pour trois autres positions initiales :
+[épisode 6834](docs/assets/visual_decoder_rollout_06834.gif),
+[épisode 8904](docs/assets/visual_decoder_rollout_08904.gif) et
+[épisode 16201](docs/assets/visual_decoder_rollout_16201.gif).
 
-Le [rapport de la démonstration](docs/cem_reproducible_demo.md) explique ce que
-montrent et ne montrent pas les animations
-([succès](docs/assets/cem_demo_success.gif),
-[échec](docs/assets/cem_demo_failure.gif)).
+### Réponse courte
 
-### Futur prédit et futur réel
-
-![Erreur du modèle selon l'horizon de prédiction sous les actions choisies par CEM.](docs/assets/on_policy_cem_errors_by_horizon.png)
-
-Les rollouts sont évalués dans l'espace latent et après décodage de la position
-et de l'orientation du T. Les mesures distinguent le plan imaginé au moment de
-la décision du flux d'actions finalement exécuté après replanification.
-
-*Cette figure répond à « à quel horizon le modèle dérive-t-il ? ». Elle montre
-que les erreurs physique et latente augmentent généralement quand le rollout se
-prolonge ; elle ne prouve pas, seule, la cause d'un échec de contrôle.*
-
-### Erreur et résultat du contrôle
-
-![Relation descriptive entre erreur on-policy et succès ou échec du contrôle.](docs/assets/on_policy_cem_error_outcome.png)
-
-Les graphiques restent liés à leurs CSV, JSON, configurations, seeds, commits et
-hashes de checkpoint afin qu'une image ne soit jamais la seule preuve disponible.
-
-*Cette figure compare descriptivement erreur et résultat. Elle montre notamment
-que l'erreur mesurée ne suffit pas à expliquer la dégradation observée quand le
-contrôleur replanifie à chaque action (`RH=1`).*
-
-### Comparaison VLA : critère obligatoire, résultat non encore publié
-
-Le projet comparera LeWM+CEM à un VLA sur les **mêmes** épisodes, objectifs,
-observations visuelles, budget d'actions et critère de réussite. Le VLA recevra
-l'image courante et l'image objectif comme deux vues, plus l'instruction
-constante « pousser le T dans la cible », sans état privilégié. Le protocole
-complet est dans [la spécification VLA](docs/vla_comparison_protocol.md).
-
-Il serait trompeur d'écrire dès maintenant qu'un VLA est meilleur : aucun VLA
-PushT n'a encore été entraîné et évalué selon ce protocole. Le résultat — quel
-qu'il soit — sera publié avec les mêmes métriques, seeds, coûts de calcul et
-vidéos que LeWM+CEM.
-
-### Guide rapide de tous les visuels
-
-| Visuel | Ce qu'il représente | Ce qu'il permet de conclure |
-| --- | --- | --- |
-| Schéma LeWM+CEM | La circulation images → embeddings → actions → futurs et le tri CEM 300 → 30. | Le décodeur explique les latents ; CEM optimise une distance latente. |
-| GIF rollout 18 pas (4 départs) | Même séquence d'actions dans le réel et dans le rollout autorégressif. | Le modèle suit souvent la scène à court terme mais dérive avec l'horizon. |
-| GIFs population CEM | 300 futurs du pousseur bleu prédits à chaque itération ; 30 élites en orange. | La recherche se concentre, mais les branches sont des prédictions et non des essais réels. |
-| Synthèse CEM succès/échec | Deux contrôles complets avec leurs coûts et états finaux. | Un coût latent faible n'est pas une preuve suffisante de succès physique. |
-| Erreur par horizon | Écart latent et physique à plusieurs horizons. | L'erreur longue portée croît et doit être suivie pendant le planning. |
-| Erreur vs résultat | Cas réussis/échoués de l'étude on-policy. | L'erreur seule ne rend pas compte de tous les échecs, en particulier RH=1. |
+Oui, les visuels répondent au but initial : LeWM peut imaginer une évolution
+visuelle à partir d'images et d'actions, puis CEM peut utiliser ces futurs pour
+concentrer sa recherche vers un plan prometteur. Cela ne démontre pas encore un
+taux de réussite général ni qu'un VLA est meilleur : ces questions restent dans
+la documentation de recherche, pas dans cette présentation.
 
 ## Démarrage rapide
 
@@ -158,18 +94,10 @@ uv sync
 bash scripts/download_assets.sh all
 bash scripts/check_phase0.sh --require-cuda --require-assets
 bash scripts/evaluate_reference.sh 42 5
-bash scripts/run_reproducible_cem_demo.sh
 ```
 
 Les artefacts lourds sont écrits sous `STABLEWM_HOME` et ne sont pas ajoutés au
 dépôt Git.
-
-Pour lancer l'étude complète de l'erreur sous les actions CEM :
-
-```bash
-source scripts/_env.sh
-uv run --project . python scripts/run_on_policy_cem_error.py --batch-size 4
-```
 
 ## Organisation du dépôt
 
@@ -182,7 +110,7 @@ uv run --project . python scripts/run_on_policy_cem_error.py --batch-size 4
 | `docs/results/` | CSV et JSON versionnés |
 | `ROADMAP.md` | Suivi du développement et critères de validation |
 
-## Documentation
+## Documentation complémentaire
 
 - [Rapport de validation : tests, résultats et limites](docs/validation_report.md)
 - [Suivi du développement](ROADMAP.md)

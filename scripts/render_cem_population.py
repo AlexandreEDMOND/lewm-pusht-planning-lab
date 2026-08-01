@@ -206,17 +206,17 @@ def draw_population_frame(
         path = points[int(index)]
         ax_scene.plot(path[:, 0], path[:, 1], color="#f97316", alpha=0.88, linewidth=1.15, zorder=4)
     best = int(elite_indices[np.argmin(costs[elite_indices])])
-    ax_scene.plot(points[best, :, 0], points[best, :, 1], color="#dc2626", linewidth=1.9, zorder=5)
+    ax_scene.plot(points[best, :, 0], points[best, :, 1], color="#111827", linewidth=1.9, zorder=5)
     ax_scene.text(
         4, 14,
         "bleu : pousseur réel au départ · noir : T réel · vert pointillé : objectif CEM\n"
-        "trajectoires du pousseur : jaune = coût faible · orange : 30 élites · rouge : meilleure élite",
+        "coût des trajectoires : jaune (faible) → bleu/violet (élevé) · orange : 30 élites · trait noir : meilleure élite",
         fontsize=7.4, color="#111827", va="top", bbox={"facecolor": "white", "alpha": 0.78, "edgecolor": "none"}, zorder=8,
     )
 
     iterations = np.arange(1, iteration + 2)
     ax_cost.plot(iterations, history_costs[: iteration + 1].mean(axis=1), color="#64748b", label="coût moyen")
-    ax_cost.plot(iterations, history_costs[: iteration + 1].min(axis=1), color="#dc2626", label="meilleure élite")
+    ax_cost.plot(iterations, history_costs[: iteration + 1].min(axis=1), color="#111827", label="meilleure élite")
     ax_cost.axvline(iteration + 1, color="#111827", linewidth=1.0, alpha=0.65)
     ax_cost.set(xlim=(1, history_costs.shape[0]), xlabel="itération CEM", ylabel="distance latente au but", title="Convergence : 300 → 30 élites")
     ax_cost.grid(alpha=0.2)

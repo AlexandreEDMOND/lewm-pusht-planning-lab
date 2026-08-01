@@ -46,9 +46,9 @@ from on_policy import (  # noqa: E402
 
 BLOCK = 5
 HORIZON = 5
-CASES = ROOT / "docs/results/rollout_control_link_metrics.csv"
-RESULTS = ROOT / "docs/results"
-ASSETS = ROOT / "docs/assets"
+CASES = ROOT / "research/results/rollout_control_link_metrics.csv"
+RESULTS = ROOT / "research/results"
+ASSETS = ROOT / "research/assets"
 
 
 def parse_args() -> argparse.Namespace:
@@ -343,8 +343,8 @@ def main() -> None:
     args = parse_args(); cases = read_cases(1 if args.smoke else None)
     stable = Path(os.environ["STABLEWM_HOME"])
     raw_root = args.raw_root or stable / ("pusht/on_policy_cem_smoke" if args.smoke else "pusht/on_policy_cem")
-    results_dir = raw_root / "results" if args.smoke else ROOT / "docs/results"
-    assets_dir = raw_root / "assets" if args.smoke else ROOT / "docs/assets"
+    results_dir = raw_root / "results" if args.smoke else ROOT / "research/results"
+    assets_dir = raw_root / "assets" if args.smoke else ROOT / "research/assets"
     if not args.skip_evaluation:
         all_paths = {rh: run_condition(cases, rh, raw_root, args.batch_size) for rh in (5, 1)}
     else:
@@ -368,7 +368,7 @@ def main() -> None:
     for row in episodes: by_key[(row["episode"], row["start_step"])][row["receding_horizon"]] = row["success"]
     paired = {"both_success": sum(v.get(5) and v.get(1) for v in by_key.values()), "rh5_only": sum(v.get(5) and not v.get(1) for v in by_key.values()), "rh1_only": sum(not v.get(5) and v.get(1) for v in by_key.values()), "both_failure": sum(not v.get(5) and not v.get(1) for v in by_key.values())}
     first_metadata = read_versioned_npz(all_paths[5][0], EXECUTION_SCHEMA_VERSION)[1]
-    result = {"protocol": {"checkpoint": "official LeWM", "checkpoint_sha256": first_metadata["checkpoint_sha256"], "cem_seed": 42, "population": 300, "iterations": 30, "elites": 30, "horizon_blocks": 5, "action_block": 5, "goal_actions": 25, "budget_actions": 50, "cases": [{"episode": int(r["episode"]), "start_step": int(r["local_start"])} for r in cases]}, "evaluation_provenance": first_metadata["code_versions"], "postprocessing_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(), "success": {f"rh{rh}": int(sum(r["success"] for r in episodes if r["receding_horizon"] == rh)) for rh in (5, 1)}, "paired_success": paired, "planning_cost": cost_summary(episodes, all_paths), "decision_forecast_aggregates": aggregates, "error_outcome_association_episode_median": error_outcome_summary(rows, episodes), "limitations": ["The 24 cases are risk-stratified, not a population sample.", "AUCs are descriptive with only three RH=5 failures; no causal claim follows.", "PushT state observations can leave their declared bounds (agent xy and velocity)."], "artifacts": {"frame_metrics": "docs/results/on_policy_cem_frame_metrics.csv", "episode_metrics": "docs/results/on_policy_cem_episode_metrics.csv", "errors_by_horizon": "docs/assets/on_policy_cem_errors_by_horizon.png", "error_outcome": "docs/assets/on_policy_cem_error_outcome.png", "latent_pose_link": "docs/assets/on_policy_cem_latent_pose_link.png", "success_gif": "docs/assets/on_policy_cem_success.gif", "failure_gif": "docs/assets/on_policy_cem_failure.gif", "raw_root": "$STABLEWM_HOME/pusht/on_policy_cem"}}
+    result = {"protocol": {"checkpoint": "official LeWM", "checkpoint_sha256": first_metadata["checkpoint_sha256"], "cem_seed": 42, "population": 300, "iterations": 30, "elites": 30, "horizon_blocks": 5, "action_block": 5, "goal_actions": 25, "budget_actions": 50, "cases": [{"episode": int(r["episode"]), "start_step": int(r["local_start"])} for r in cases]}, "evaluation_provenance": first_metadata["code_versions"], "postprocessing_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(), "success": {f"rh{rh}": int(sum(r["success"] for r in episodes if r["receding_horizon"] == rh)) for rh in (5, 1)}, "paired_success": paired, "planning_cost": cost_summary(episodes, all_paths), "decision_forecast_aggregates": aggregates, "error_outcome_association_episode_median": error_outcome_summary(rows, episodes), "limitations": ["The 24 cases are risk-stratified, not a population sample.", "AUCs are descriptive with only three RH=5 failures; no causal claim follows.", "PushT state observations can leave their declared bounds (agent xy and velocity)."], "artifacts": {"frame_metrics": "research/results/on_policy_cem_frame_metrics.csv", "episode_metrics": "research/results/on_policy_cem_episode_metrics.csv", "errors_by_horizon": "research/assets/on_policy_cem_errors_by_horizon.png", "error_outcome": "research/assets/on_policy_cem_error_outcome.png", "latent_pose_link": "research/assets/on_policy_cem_latent_pose_link.png", "success_gif": "research/assets/on_policy_cem_success.gif", "failure_gif": "research/assets/on_policy_cem_failure.gif", "raw_root": "$STABLEWM_HOME/pusht/on_policy_cem"}}
     (results_dir / "on_policy_cem_results.json").write_text(json.dumps(result, indent=2) + "\n")
     make_figures(rows, episodes, assets_dir)
     flat_raw_paths = [path for paths in all_paths.values() for path in paths]

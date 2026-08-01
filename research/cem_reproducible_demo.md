@@ -193,7 +193,7 @@ vérifié par deux reruns identiques.
 
 ## Trace compacte (schéma v1)
 
-Quatre traces versionnées (`docs/results/cem_demo_compact/`, une par
+Quatre traces versionnées (`research/results/cem_demo_compact/`, une par
 décision et par environnement, ~2,4 Mo chacune, 9,46 Mo au total) contiennent,
 pour les 30 itérations : moyenne et écart-type avant/après mise à jour, coûts
 min, médian, moyen, P90 et P95, coûts et actions des élites, latents terminaux

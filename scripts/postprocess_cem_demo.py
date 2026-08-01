@@ -7,10 +7,10 @@ Inputs (heavy, under ``$STABLEWM_HOME/pusht/reproducible_cem_demo/``):
   plans/selected_plan_0000..0001.npz final selected plans
 
 Outputs (versioned):
-  docs/results/cem_demo_manifest.json
-  docs/results/cem_demo_episode_metrics.csv
-  docs/results/cem_demo_compact/*.npz + *.json
-  docs/assets/cem_demo_success.gif, cem_demo_failure.gif, cem_demo_overview.png
+  research/results/cem_demo_manifest.json
+  research/results/cem_demo_episode_metrics.csv
+  research/results/cem_demo_compact/*.npz + *.json
+  research/assets/cem_demo_success.gif, cem_demo_failure.gif, cem_demo_overview.png
 
 The script is deterministic: it sets the same CUDA determinism options as the
 decoder evaluation pipeline, never samples, and only reads recorded data.
@@ -86,8 +86,8 @@ from train_visual_decoder import encode_images, seed_everything  # noqa: E402
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw-root", type=Path, default=None)
-    parser.add_argument("--results-dir", type=Path, default=ROOT / "docs" / "results")
-    parser.add_argument("--assets-dir", type=Path, default=ROOT / "docs" / "assets")
+    parser.add_argument("--results-dir", type=Path, default=ROOT / "research" / "results")
+    parser.add_argument("--assets-dir", type=Path, default=ROOT / "research" / "assets")
     parser.add_argument("--lab-root", type=Path, default=ROOT)
     parser.add_argument("--lewm-root", type=Path, default=ROOT / "third_party" / "le-wm")
     parser.add_argument(
@@ -118,7 +118,7 @@ def verify_protocol(arrays: dict[str, np.ndarray], metadata: dict, lab_root: Pat
         lab_root,
         lewm_root,
         strict=False,
-        ignore_paths=("docs/results/cem_demo_manifest.json",),
+        ignore_paths=("research/results/cem_demo_manifest.json",),
     )
     if metadata["checkpoint_sha256"] != EXPECTED_CHECKPOINT_SHA256:
         raise RuntimeError(
@@ -526,7 +526,7 @@ def write_manifest(
             "versioned": versioned,
             "heavy": heavy,
             "self_reference": {
-                "path": "docs/results/cem_demo_manifest.json",
+                "path": "research/results/cem_demo_manifest.json",
                 "note": (
                     "the manifest cannot contain its own digest; "
                     "scripts/validate_cem_demo.py recomputes it on every validation"
@@ -610,7 +610,7 @@ def main() -> None:
         args.lab_root,
         args.lewm_root,
         strict=False,
-        ignore_paths=("docs/results/cem_demo_manifest.json",),
+        ignore_paths=("research/results/cem_demo_manifest.json",),
     )
     manifest_path = args.results_dir / "cem_demo_manifest.json"
     manifest = write_manifest(

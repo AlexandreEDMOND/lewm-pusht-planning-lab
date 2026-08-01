@@ -5,11 +5,11 @@ artefact publiable** et ce qui reste à faire. Une fonctionnalité locale n'est
 donc pas automatiquement considérée comme terminée.
 
 Dernière validation : **31 juillet 2026**. Résultats et vérifications :
-[docs/validation_report.md](docs/validation_report.md). Le
-[démonstrateur CEM reproductible](docs/cem_reproducible_demo.md) relie la
+[research/validation_report.md](research/validation_report.md). Le
+[démonstrateur CEM reproductible](research/cem_reproducible_demo.md) relie la
 recherche CEM, les plans, les actions exécutées, les futurs prédits, la
 trajectoire réelle et le résultat final sur deux épisodes fixes.
-L'[audit initial](docs/project_audit_2026-07-30.md) reste disponible comme
+L'[audit initial](research/project_audit_2026-07-30.md) reste disponible comme
 photographie historique du dépôt avant l'étude on-policy.
 
 ## Tableau de bord
@@ -37,7 +37,7 @@ Les cases ci-dessous signifient :
 
 ## Validation de généralisation — terminée
 
-Le [rapport du 25 juillet 2026](docs/rollout_generalization.md) évalue une
+Le [rapport du 25 juillet 2026](research/rollout_generalization.md) évalue une
 fenêtre uniforme sur chacun des 128 épisodes de test, sépare mouvement libre,
 contact et poussée effective, puis rejoue CEM sur 24 cas stratifiés par risque.
 
@@ -69,7 +69,7 @@ physique sous les mêmes actions expertes (`ρ≈0,33–0,35`). Elle ne prédit 
 5. Décider à partir de ce test entre modèle temporel plus fin (`action_block=1`)
    et amélioration du coût/solveur CEM.
 
-**Résultat :** [l'étude on-policy](docs/on_policy_cem_error.md) observe une
+**Résultat :** [l'étude on-policy](research/on_policy_cem_error.md) observe une
 dérive à 25 actions; RH=1 ne réduit pas l'erreur à cinq actions et obtient
 7/24 contre 21/24 pour RH=5 sur les mêmes cas stratifiés. Ces proportions ne
 sont pas des taux de réussite populationnels.
@@ -194,7 +194,7 @@ reste à enregistrer.**
 - [x] Enregistrer les latents des rollouts et le latent objectif nécessaires à l'analyse.
 - [x] Vérifier que l'instrumentation ne change pas les actions ni le résultat du CEM de référence.
 - [x] Tester la sélection des élites, la mise à jour moyenne/écart-type et les bornes des actions retournées.
-- [x] Publier une trace compacte avec provenance propre, hash et description du schéma (schéma v1, docs/results/cem_demo_compact/).
+- [x] Publier une trace compacte avec provenance propre, hash et description du schéma (schéma v1, research/results/cem_demo_compact/).
 
 **Sortie vérifiable :** pour une décision donnée, une trace permet de reconstruire l'évolution de `μ`, `σ`, les élites et le meilleur coût à chaque itération.
 
@@ -213,7 +213,7 @@ factuel.**
 - [x] Afficher les coûts et la contraction de la dispersion au fil des itérations.
 - [x] Afficher les rollouts latents sans prétendre qu'une projection 2D est une preuve physique.
 - [x] Exporter une vidéo et son métadonnée JSON à partir d'une trace sauvegardée.
-- [x] Publier une animation légère, légendée et reliée aux métriques sources (GIFs de la démo, convention de 57 frames documentée dans docs/cem_reproducible_demo.md).
+- [x] Publier une animation légère, légendée et reliée aux métriques sources (GIFs de la démo, convention de 57 frames documentée dans research/cem_reproducible_demo.md).
 
 **Sortie vérifiable :** une vidéo montre, pour un épisode, la population initialement dispersée, la sélection des élites et la concentration de la distribution jusqu'à l'action exécutée. Les chiffres affichés correspondent aux traces brutes.
 
@@ -223,7 +223,7 @@ factuel.**
 
 Le LeWM actuel utilise un unique embedding global issu du token CLS. Il ne conserve pas explicitement une grille spatiale de patches ; un petit décodeur peut donc reconstruire une image, mais la netteté et la géométrie ne sont pas garanties. Le décodeur doit d'abord être validé sur des latents d'images réelles avant d'être utilisé pour juger les rollouts autorégressifs.
 
-**Résultat du test de faisabilité : positif avec réserves.** Le [rapport du 25 juillet 2026](docs/visual_decoder_feasibility.md) mesure le décodeur pixel direct à 26,67 dB de PSNR, 0,924 de SSIM et 0,787 d'IoU du premier plan sur 2 048 images de 128 épisodes de test. Les poses sont reconnaissables mais les contours restent flous. Un décodeur structuré `latent -> état PushT -> rendu simulateur` donne des formes exactes avec une erreur moyenne de 5,98 px sur la position du T et 2,24° sur son angle.
+**Résultat du test de faisabilité : positif avec réserves.** Le [rapport du 25 juillet 2026](research/visual_decoder_feasibility.md) mesure le décodeur pixel direct à 26,67 dB de PSNR, 0,924 de SSIM et 0,787 d'IoU du premier plan sur 2 048 images de 128 épisodes de test. Les poses sont reconnaissables mais les contours restent flous. Un décodeur structuré `latent -> état PushT -> rendu simulateur` donne des formes exactes avec une erreur moyenne de 5,98 px sur la position du T et 2,24° sur son angle.
 
 Le Transformer inspiré de l'annexe D est moins fidèle avec le même budget de 10 000 images : 22,14 dB de PSNR et 0,663 d'IoU. Sur le protocole officiel, le décodeur convolutionnel appliqué aux latents prédits atteint 27,26 dB, 0,923 de SSIM et 0,802 d'IoU en moyenne sur les frames prédites. À `t=90`, le stress test reste lisible (25,71 dB et 0,768 d'IoU), mais le diagnostic physique révèle 13,42 px d'erreur moyenne sur le T et 7,49° sur son orientation.
 

@@ -14,4 +14,4 @@ uv run --project "$LAB_ROOT" python "$renderer" \
   --output "$LAB_ROOT/docs/assets/cem_population_success.gif"
 uv run --project "$LAB_ROOT" python "$renderer" \
   --raw-root "$raw_root" --environment 0 --decision 0 \
-  --output "$LAB_ROOT/docs/assets/cem_population_failure.gif"
+  --output "$LAB_ROOT/research/assets/cem_population_failure.gif"

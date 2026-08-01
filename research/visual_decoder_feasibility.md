@@ -101,10 +101,10 @@ significative avant que l'image floue ne paraisse manifestement fausse.
 
 GIFs du protocole officiel :
 
-- [Épisode 4475](assets/visual_decoder_rollout_04475.gif)
-- [Épisode 6834](assets/visual_decoder_rollout_06834.gif)
-- [Épisode 8904](assets/visual_decoder_rollout_08904.gif)
-- [Épisode 16201](assets/visual_decoder_rollout_16201.gif)
+- [Épisode 4475](../docs/assets/visual_decoder_rollout_04475.gif)
+- [Épisode 6834](../docs/assets/visual_decoder_rollout_06834.gif)
+- [Épisode 8904](../docs/assets/visual_decoder_rollout_08904.gif)
+- [Épisode 16201](../docs/assets/visual_decoder_rollout_16201.gif)
 
 Chaque GIF affiche, dans l'ordre : réel, plafond encode→decode, rollout latent
 décodé, puis état physique décodé avec le moteur de rendu. Les trois premières

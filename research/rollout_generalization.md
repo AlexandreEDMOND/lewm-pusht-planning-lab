@@ -160,7 +160,7 @@ Les résultats bruts sont écrits dans
 `$STABLEWM_HOME/pusht/visual_decoder_feasibility/generalization/`.
 
 Les copies versionnées utilisées par ce rapport sont disponibles dans
-[docs/results](results/) : métriques par frame, résumés par épisode, jointure
+[research/results](results/) : métriques par frame, résumés par épisode, jointure
 CEM et fichiers JSON de protocole.
 
 ## Validation on-policy associée

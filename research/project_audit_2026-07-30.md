@@ -37,7 +37,7 @@ Ont été examinés :
 
 - le README, la roadmap et les deux rapports scientifiques ;
 - les scripts, configurations, tests et modifications du fork LeWM ;
-- les résultats versionnés sous `docs/results/` ;
+- les résultats versionnés sous `research/results/` ;
 - les artefacts locaux ignorés par Git sous `.local/stablewm/` ;
 - l'historique Git, le verrou de dépendances et le statut du sous-module.
 

@@ -106,19 +106,14 @@ dépôt Git.
 | `third_party/le-wm/` | Fork LeWM épinglé comme sous-module |
 | `scripts/` | Évaluation, instrumentation, décodage et génération des rapports |
 | `config/` | Configuration reproductible et chemins locaux |
-| `docs/assets/` | Figures et animations légères |
-| `docs/results/` | CSV et JSON versionnés |
+| `docs/assets/` | Visuels de la démonstration principale |
+| `research/` | Rapports, médias, résultats et protocoles exploratoires |
 | `ROADMAP.md` | Suivi du développement et critères de validation |
 
 ## Documentation complémentaire
 
-- [Rapport de validation : tests, résultats et limites](docs/validation_report.md)
+- [Espace recherche : récit, résultats et limites](research/README.md)
 - [Suivi du développement](ROADMAP.md)
-- [Démonstrateur CEM reproductible de bout en bout](docs/cem_reproducible_demo.md)
-- [Erreur on-policy sous les actions choisies par CEM](docs/on_policy_cem_error.md)
-- [Généralisation des rollouts sur 128 épisodes](docs/rollout_generalization.md)
-- [Faisabilité du décodage visuel](docs/visual_decoder_feasibility.md)
-- [Résultats bruts versionnés](docs/results/)
 
 ## Sources et crédits
 

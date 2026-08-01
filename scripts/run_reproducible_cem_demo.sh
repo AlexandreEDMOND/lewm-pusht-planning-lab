@@ -89,8 +89,8 @@ echo "[4/6] Exécution du protocole CEM officiel sur les deux épisodes fixés"
 echo "[5/6] Post-traitement : traces compactes, métriques, manifeste, animations"
 uv run --project "$LAB_ROOT" python "$LAB_ROOT/scripts/postprocess_cem_demo.py" \
   --raw-root "$DEMO_ROOT" \
-  --results-dir "$LAB_ROOT/docs/results" \
-  --assets-dir "$LAB_ROOT/docs/assets" \
+  --results-dir "$LAB_ROOT/research/results" \
+  --assets-dir "$LAB_ROOT/research/assets" \
   --lab-root "$LAB_ROOT" \
   --lewm-root "$LEWM_ROOT"
 
@@ -98,8 +98,8 @@ echo "[6/6] Validation programmatique"
 uv run --project "$LAB_ROOT" python "$LAB_ROOT/scripts/validate_cem_demo.py" \
   --lab-root "$LAB_ROOT" \
   --lewm-root "$LEWM_ROOT" \
-  --results-dir "$LAB_ROOT/docs/results" \
-  --assets-dir "$LAB_ROOT/docs/assets" \
+  --results-dir "$LAB_ROOT/research/results" \
+  --assets-dir "$LAB_ROOT/research/assets" \
   --raw-root "$DEMO_ROOT"
 
 echo "Démo CEM reproductible terminée : $DEMO_ROOT"

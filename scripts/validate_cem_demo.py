@@ -88,8 +88,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lab-root", type=Path, default=ROOT)
     parser.add_argument("--lewm-root", type=Path, default=ROOT / "third_party" / "le-wm")
-    parser.add_argument("--results-dir", type=Path, default=ROOT / "docs" / "results")
-    parser.add_argument("--assets-dir", type=Path, default=ROOT / "docs" / "assets")
+    parser.add_argument("--results-dir", type=Path, default=ROOT / "research" / "results")
+    parser.add_argument("--assets-dir", type=Path, default=ROOT / "research" / "assets")
     parser.add_argument("--raw-root", type=Path, default=None)
     args = parser.parse_args()
     failures: list[str] = []
@@ -190,7 +190,7 @@ def main() -> int:
         failures.append(str(error))
 
     # -- markdown links
-    for broken in markdown_links_valid(args.lab_root / "docs", args.lab_root / "README.md"):
+    for broken in markdown_links_valid(args.lab_root / "research", args.lab_root / "README.md"):
         failures.append(f"markdown link: {broken}")
 
     # -- provenance and git hygiene

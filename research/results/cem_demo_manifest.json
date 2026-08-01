@@ -69,47 +69,47 @@
     ],
     "self_reference": {
       "note": "the manifest cannot contain its own digest; scripts/validate_cem_demo.py recomputes it on every validation",
-      "path": "docs/results/cem_demo_manifest.json"
+      "path": "research/results/cem_demo_manifest.json"
     },
     "versioned": [
       {
-        "bytes": 1896,
-        "path": "docs/results/cem_demo_episode_metrics.csv",
-        "sha256": "327ccc0bb3fab3935e9619729df7e961d57064e7813d6ad54cdae9461ab70d3f"
+        "bytes": 1912,
+        "path": "research/results/cem_demo_episode_metrics.csv",
+        "sha256": "1f26432d72b30d987dcce6d84f617ea5d09b016db1937db98d32038e23ae7a85"
       },
       {
         "bytes": 2372083,
-        "path": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
+        "path": "research/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
         "sha256": "3cf8ff0e18575fb8d103c109d9226893d5843dbfb072fc230922974551c47ec6"
       },
       {
         "bytes": 2357791,
-        "path": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
+        "path": "research/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
         "sha256": "364cf1e3b88af7412a12ea326634f43ebf725242d551d3945bb2da7e5a2ce576"
       },
       {
         "bytes": 2358049,
-        "path": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
+        "path": "research/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
         "sha256": "ffba81c57fc8e42b2ff29e693dd6c6f2a56c367c744cb23d45594ddcff0cf324"
       },
       {
         "bytes": 2374024,
-        "path": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
+        "path": "research/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
         "sha256": "9cece661a107815d33fb0cc267d296464aaeac86cc430a68aa4eae20fb94e640"
       },
       {
         "bytes": 1079995,
-        "path": "docs/assets/cem_demo_success.gif",
+        "path": "research/assets/cem_demo_success.gif",
         "sha256": "0605d0f1d59648b80c9a4b92ae99ea145111ceb18097fba0c82f3866776d1296"
       },
       {
         "bytes": 1054922,
-        "path": "docs/assets/cem_demo_failure.gif",
+        "path": "research/assets/cem_demo_failure.gif",
         "sha256": "c576cf3e5e4b0b6ddda6e7c3d41e3c47589e4025a6fe2d398a0d88ca1a1c814f"
       },
       {
         "bytes": 140328,
-        "path": "docs/assets/cem_demo_overview.png",
+        "path": "research/assets/cem_demo_overview.png",
         "sha256": "45cb8111b79c4f3522d6eb3e9c7702ecd864f137536da63cc5a7b61e7aa9b7bb"
       }
     ]
@@ -141,9 +141,9 @@
     {
       "action_plan_exact_match": true,
       "cem_rollouts_per_episode": 18000,
-      "compact_trace_decision_0": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
+      "compact_trace_decision_0": "research/results/cem_demo_compact/compact_trace_decision_0000_env_1.npz",
       "compact_trace_decision_0_sha256": "3cf8ff0e18575fb8d103c109d9226893d5843dbfb072fc230922974551c47ec6",
-      "compact_trace_decision_1": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
+      "compact_trace_decision_1": "research/results/cem_demo_compact/compact_trace_decision_0001_env_1.npz",
       "compact_trace_decision_1_sha256": "364cf1e3b88af7412a12ea326634f43ebf725242d551d3945bb2da7e5a2ce576",
       "decision_action_offsets": [
         0,
@@ -183,9 +183,9 @@
     {
       "action_plan_exact_match": true,
       "cem_rollouts_per_episode": 18000,
-      "compact_trace_decision_0": "docs/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
+      "compact_trace_decision_0": "research/results/cem_demo_compact/compact_trace_decision_0000_env_0.npz",
       "compact_trace_decision_0_sha256": "ffba81c57fc8e42b2ff29e693dd6c6f2a56c367c744cb23d45594ddcff0cf324",
-      "compact_trace_decision_1": "docs/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
+      "compact_trace_decision_1": "research/results/cem_demo_compact/compact_trace_decision_0001_env_0.npz",
       "compact_trace_decision_1_sha256": "9cece661a107815d33fb0cc267d296464aaeac86cc430a68aa4eae20fb94e640",
       "decision_action_offsets": [
         0,
@@ -269,10 +269,10 @@
     "evaluation_lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
     "hardware": "NVIDIA GeForce RTX 3090",
     "lab_clean": true,
-    "lab_commit": "85da3fa978aa9566c2b40ba4d817edd4a7e971bb",
+    "lab_commit": "983accf7b09c1fff762ee3a2cde97744b9492807",
     "lewm_clean": true,
     "lewm_commit": "7246b262be75098f880caacaa7abf8f6c55de22b",
-    "postprocessing_commit": "85da3fa978aa9566c2b40ba4d817edd4a7e971bb",
+    "postprocessing_commit": "983accf7b09c1fff762ee3a2cde97744b9492807",
     "postprocessing_note": "the evaluation commit is read from the raw execution sidecar recorded by eval.py at run time; the post-processing commit is the HEAD of this repository when the published artifacts were generated. They differ only when a correction was committed after the evaluation run.",
     "seed": 42
   },

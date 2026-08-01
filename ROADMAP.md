@@ -1,8 +1,12 @@
 # Roadmap
 
-Cette roadmap sépare ce qui est **implémenté**, ce qui est **validé par un
-artefact publiable** et ce qui reste à faire. Une fonctionnalité locale n'est
-donc pas automatiquement considérée comme terminée.
+Cette roadmap sépare le **démonstrateur pédagogique actuel** des travaux de
+**recherche**. Le README ne porte que le premier : il explique LeWM, montre le
+rollout visuel et rend la recherche CEM observable. Les études plus longues,
+leurs limites et les comparaisons futures vivent dans [research/](research/).
+
+Une fonctionnalité locale n'est donc pas automatiquement considérée comme
+terminée : elle doit aussi avoir une preuve versionnée et lisible.
 
 Dernière validation : **31 juillet 2026**. Résultats et vérifications :
 [research/validation_report.md](research/validation_report.md). Le
@@ -12,7 +16,23 @@ trajectoire réelle et le résultat final sur deux épisodes fixes.
 L'[audit initial](research/project_audit_2026-07-30.md) reste disponible comme
 photographie historique du dépôt avant l'étude on-policy.
 
-## Tableau de bord
+## Objectif actuel : démonstrateur visuel LeWM + CEM
+
+| Élément | État | Ce qui est montré |
+| --- | --- | --- |
+| Chaîne world model | Terminé | Image → encodeur → embedding + action → predictor → embedding suivant → décodeur visuel, en boucle. |
+| Rollout visuel | Terminé, avec une convention à connaître | Quatre GIFs comparent le réel et le rollout de **18 pas du modèle** ; un pas représente actuellement un bloc de 5 actions, donc 90 actions PushT. |
+| CEM observable | Terminé | L'image de départ et l'objectif guident 300 trajectoires candidates ; les 30 élites et le meilleur plan sont visibles dans le GIF principal. |
+| Comparaison VLA | Hors objectif actuel | Seul le protocole est préparé dans la recherche ; aucun résultat VLA n'est revendiqué. |
+
+Pour correspondre littéralement à la demande initiale, il reste deux choix de
+périmètre à réaliser si on les juge obligatoires : entraîner une variante
+`action_block=1` pour montrer **18 actions élémentaires** (et non 18 blocs), et
+rejouer CEM avec une population de **500** si 500 plutôt que 300 est une
+contrainte. Le démonstrateur actuel montre déjà le mécanisme demandé avec la
+configuration officielle, 300 candidats et 30 élites.
+
+## Travaux de recherche (hors objectif actuel)
 
 | Jalon | État | Preuve actuelle | Prochaine sortie |
 | --- | --- | --- | --- |
@@ -28,7 +48,7 @@ photographie historique du dépôt avant l'étude on-policy.
 | Phase 5 — baselines | Non commencée | Protocole prévu | CEM vs random shooting à budget égal |
 | Phase 6 — probes | Partielle | Décodeur d'état non linéaire | Probes linéaires et comparaison de checkpoints |
 | Phase 7 — OOD | Non commencée | Intention | Protocoles visuel et physique |
-| Phase 8 — VLA | Requis pour la comparaison finale, non commencé | Protocole équitable versionné | Fine-tuning puis évaluation sur les mêmes épisodes que LeWM+CEM |
+| Phase 8 — VLA | Non commencée, hors objectif actuel | Protocole équitable versionné | Fine-tuning puis évaluation sur les mêmes épisodes que LeWM+CEM |
 
 Les cases ci-dessous signifient :
 
@@ -74,7 +94,7 @@ dérive à 25 actions; RH=1 ne réduit pas l'erreur à cinq actions et obtient
 7/24 contre 21/24 pour RH=5 sur les mêmes cas stratifiés. Ces proportions ne
 sont pas des taux de réussite populationnels.
 
-## Chemin critique recommandé
+## Chemin critique de recherche recommandé
 
 L'ordre suivant permet de prendre une décision à chaque jalon et évite
 d'accumuler des expériences décoratives :
@@ -97,7 +117,7 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 
 ## Définition de terminé
 
-### Niveau A — démonstrateur reproductible
+### Niveau A — démonstrateur pédagogique reproductible
 
 - [x] Un clone neuf passe l'installation, le contrôle phase 0 et les 35 tests.
 - [x] Une commande courte reproduit une évaluation CEM et son résultat structuré.
@@ -106,10 +126,13 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 - [x] L'animation relie la recherche CEM à toute la trajectoire exécutée.
 - [x] Le README présente PushT, LeWM, CEM et les visualisations avec une
   animation intégrée.
+- [ ] Décider si les deux conventions de la demande initiale doivent être
+  strictes : 18 actions élémentaires (au lieu de 18 blocs) et 500 candidats
+  (au lieu de 300). Les exécuter si la réponse est oui.
 - [ ] Le dépôt racine possède une licence ; code, dataset et checkpoints ont une
   provenance explicite.
 
-### Niveau B — version 1 scientifique
+### Niveau B — programme de recherche / version 1 scientifique
 
 Le niveau B correspond à la promesse actuelle « apprendre un world model puis
 l'utiliser pour planifier ». Il exige le niveau A, plus :
@@ -123,7 +146,8 @@ l'utiliser pour planifier ». Il exige le niveau A, plus :
 - [ ] Comparaison checkpoint officiel / checkpoint local sur les mêmes épisodes.
 - [ ] Comparaison CEM / random shooting à budget total de rollouts égal.
 - [ ] Comparaison LeWM+CEM / VLA à informations visuelles, objectifs et budget
-  d'actions égaux ; ne conclure qu'après une évaluation publiée.
+  d'actions égaux ; ne conclure qu'après une évaluation publiée. Ce point est
+  explicitement hors du démonstrateur actuel.
 - [ ] Balayages annoncés exécutés, ou périmètre réduit explicitement avant
   l'analyse.
 - [ ] Release regroupant résultats bruts, configurations, hashes, figures,
@@ -144,6 +168,12 @@ critères de sortie redeviennent obligatoires.
 - **Comparaison équitable** : les solveurs reçoivent le même budget total de rollouts de modèle.
 - **Décodeur visuel** : outil de diagnostic et de communication, pas composant du coût CEM tant que son utilité pour le contrôle n'est pas démontrée.
 - **Comparaison VLA** : extension expérimentale. Elle compare le contrôle obtenu à données et épisodes PushT identiques, sans prétendre isoler l'effet du préentraînement ou du langage.
+
+## Détail des phases de recherche
+
+Les phases suivantes développent ou évaluent scientifiquement le système. Elles
+ne sont pas nécessaires pour lire ou présenter le démonstrateur, mais leurs
+rapports et données sont conservés dans [research/](research/).
 
 ## Phase 0 — Bootstrap reproductible
 

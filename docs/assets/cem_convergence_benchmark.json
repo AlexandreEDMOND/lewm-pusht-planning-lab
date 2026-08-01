@@ -1,0 +1,26 @@
+{
+  "benchmark_scope": "one 25-action MPC decision only; this benchmark measures internal CEM convergence and synchronized compute time, not full-task PushT success",
+  "candidate_trajectories_to_convergence": 9900,
+  "candidate_trajectories_total": 18000,
+  "compute_seconds_to_convergence": 4.632319763000851,
+  "compute_seconds_total": 8.219918820999737,
+  "convergence_iteration": 33,
+  "convergence_threshold_cost": 1.607082200050354,
+  "cost_semantics": "terminal LeWM latent distance to the goal embedding",
+  "episode": 3876,
+  "evaluation_code_versions": {
+    "lab": "e8999c6dabdbeb5c1be26be2dfaaca73209d6102",
+    "lewm": "2d093a6ad9965fb9f991d64386bfcf0cb1a53747"
+  },
+  "final_best_cost": 1.4631519317626953,
+  "initial_best_cost": 4.341757297515869,
+  "iterations": 60,
+  "observed_improvement_fraction": 0.95,
+  "population": 300,
+  "source_execution": "$STABLEWM_HOME/pusht/cem_convergence_benchmark/raw/execution.npz",
+  "source_execution_sha256": "7c8ffd68a013129bbeb81cb841adc3f0e2e09f649756e8f9d002a775cead39ae",
+  "source_trace": "$STABLEWM_HOME/pusht/cem_convergence_benchmark/traces/decision_0000.npz",
+  "source_trace_sha256": "38f1e30474a229e427d88a460c7c03168d2d51483cdb4da90c1c0022df70944c",
+  "start_step": 16,
+  "timing_semantics": "per iteration real elapsed time around CEM sampling, model rollout, elite selection and distribution update; CUDA is synchronized before and after the interval; trace serialization is excluded"
+}

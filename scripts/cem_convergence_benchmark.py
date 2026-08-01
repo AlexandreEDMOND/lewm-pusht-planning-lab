@@ -99,7 +99,8 @@ def draw_benchmark(summary: dict[str, float | int], costs: np.ndarray, seconds: 
     cumulative_seconds = np.cumsum(seconds)
     convergence = int(summary["convergence_iteration"]) - 1
 
-    figure, (ax_cost, ax_time) = plt.subplots(1, 2, figsize=(12.4, 4.7), dpi=150, constrained_layout=True)
+    figure, (ax_cost, ax_time) = plt.subplots(1, 2, figsize=(12.4, 5.25), dpi=150)
+    figure.subplots_adjust(left=0.06, right=0.985, top=0.82, bottom=0.20, wspace=0.11)
     ax_cost.plot(cumulative_candidates, candidate_best, color="#94a3b8", linewidth=1.2, label="meilleure candidate de l'itération")
     ax_cost.plot(cumulative_candidates, running_best, color="#111827", linewidth=2.2, label="meilleur coût cumulé")
     ax_cost.axhline(float(summary["convergence_threshold_cost"]), color="#f97316", linestyle="--", linewidth=1.4, label="seuil 95 % du gain observé")
@@ -121,7 +122,7 @@ def draw_benchmark(summary: dict[str, float | int], costs: np.ndarray, seconds: 
         fontsize=13, fontweight="bold",
     )
     figure.text(
-        0.5, 0.01,
+        0.5, 0.055,
         "Le seuil décrit la convergence du coût latent interne (95 % de la baisse observée), pas une garantie de réussite physique dans PushT.",
         ha="center", fontsize=8.5, color="#475569",
     )
@@ -157,9 +158,13 @@ def main() -> None:
         {
             "episode": int(np.load(execution_path)["episode_ids"][args.environment]),
             "start_step": int(np.load(execution_path)["start_steps"][args.environment]),
-            "success": bool(execution_metadata["evaluation_results"]["episode_successes"][args.environment]),
             "cost_semantics": "terminal LeWM latent distance to the goal embedding",
+            "benchmark_scope": (
+                "one 25-action MPC decision only; this benchmark measures internal CEM "
+                "convergence and synchronized compute time, not full-task PushT success"
+            ),
             "timing_semantics": trace_metadata["cem_timing_semantics"],
+            "evaluation_code_versions": execution_metadata["code_versions"],
             "source_trace": "$STABLEWM_HOME/pusht/cem_convergence_benchmark/traces/decision_0000.npz",
             "source_trace_sha256": sha256_file(trace_path),
             "source_execution": "$STABLEWM_HOME/pusht/cem_convergence_benchmark/raw/execution.npz",

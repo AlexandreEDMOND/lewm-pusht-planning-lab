@@ -47,6 +47,23 @@ Pour régénérer ces deux GIFs depuis les traces complètes de la démo :
 bash scripts/render_cem_population.sh
 ```
 
+### Bench : quand la recherche CEM se stabilise-t-elle ?
+
+![Bench CEM : le meilleur coût latent cumulé se stabilise après 9 900 trajectoires candidates et 4,63 secondes de calcul GPU synchronisé.](docs/assets/cem_convergence_benchmark.png)
+
+Sur une décision MPC fixe, CEM évalue **300 trajectoires par itération** pendant
+60 itérations, soit **18 000 trajectoires imaginées**. Sur la RTX 3090 du
+projet, **95 % de la baisse de coût observée** est atteinte à l'itération **33** :
+**9 900 trajectoires** et **4,63 s** de calcul CEM synchronisé ; les 60
+itérations prennent **8,22 s** au total. Le chronomètre entoure le tirage des
+candidats, le rollout LeWM, la sélection des 30 élites et la mise à jour de la
+distribution ; il exclut l'écriture des traces.
+
+Ce bench mesure uniquement la convergence du **coût latent interne** vers
+l'image but. Il ne promet pas qu'une seule décision de 25 actions résout tout
+PushT : la réussite physique doit toujours être vérifiée par le simulateur.
+Pour le rejouer, utiliser `bash scripts/run_cem_convergence_benchmark.sh`.
+
 ### 18 pas du world model : réel vs prédit
 
 ![Épisode PushT 4475 : image réelle, reconstruction depuis le latent réel, rollout autorégressif décodé et rendu structuré, sur 18 transitions du modèle.](docs/assets/visual_decoder_rollout_04475.gif)

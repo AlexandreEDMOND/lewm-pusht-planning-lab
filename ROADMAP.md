@@ -22,15 +22,16 @@ photographie historique du dépôt avant l'étude on-policy.
 | --- | --- | --- |
 | Chaîne world model | Terminé | Image → encodeur → embedding + action → predictor → embedding suivant → décodeur visuel, en boucle. |
 | Rollout visuel | Terminé, avec une convention à connaître | Quatre GIFs comparent le réel et le rollout de **18 pas du modèle** ; un pas représente actuellement un bloc de 5 actions, donc 90 actions PushT. |
-| CEM observable | Terminé | L'image de départ et l'objectif guident 300 trajectoires candidates ; les 30 élites et le meilleur plan sont visibles dans le GIF principal. |
+| CEM observable | Terminé | L'image de départ et l'objectif guident 300 trajectoires candidates ; les 30 élites, le meilleur plan et leur convergence sont visibles. |
+| Bench de convergence CEM | Terminé | 60 itérations × 300 trajectoires : 95 % du gain latent observé à 9 900 trajectoires et 4,63 s GPU synchronisées ; 8,22 s au total. |
 | Comparaison VLA | Hors objectif actuel | Seul le protocole est préparé dans la recherche ; aucun résultat VLA n'est revendiqué. |
 
-Pour correspondre littéralement à la demande initiale, il reste deux choix de
-périmètre à réaliser si on les juge obligatoires : entraîner une variante
-`action_block=1` pour montrer **18 actions élémentaires** (et non 18 blocs), et
-rejouer CEM avec une population de **500** si 500 plutôt que 300 est une
-contrainte. Le démonstrateur actuel montre déjà le mécanisme demandé avec la
-configuration officielle, 300 candidats et 30 élites.
+Le démonstrateur conserve volontairement 18 **pas du modèle** (90 actions
+PushT), car ils rendent visible la dérive d'un rollout long tout en respectant
+la granularité native de LeWM, cinq actions par pas. Il conserve aussi 300
+candidats et 30 élites : cette population suffit à visualiser CEM et le bench
+mesure désormais son coût réel. Passer à 18 actions élémentaires ou 500
+candidats n'apporterait pas de réponse supplémentaire à l'objectif actuel.
 
 ## Travaux de recherche (hors objectif actuel)
 
@@ -126,9 +127,8 @@ Les probes, l'OOD, iCEM/MPPI et le VLA viennent après ce chemin critique.
 - [x] L'animation relie la recherche CEM à toute la trajectoire exécutée.
 - [x] Le README présente PushT, LeWM, CEM et les visualisations avec une
   animation intégrée.
-- [ ] Décider si les deux conventions de la demande initiale doivent être
-  strictes : 18 actions élémentaires (au lieu de 18 blocs) et 500 candidats
-  (au lieu de 300). Les exécuter si la réponse est oui.
+- [x] Montrer et mesurer une recherche CEM suffisamment longue : nombre de
+  candidats jusqu'à 95 % du gain latent observé et temps GPU synchronisé.
 - [ ] Le dépôt racine possède une licence ; code, dataset et checkpoints ont une
   provenance explicite.
 
